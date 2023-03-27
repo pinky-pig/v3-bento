@@ -1,0 +1,20 @@
+{
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev docs --port 8080",
+    "docs:build": "vitepress build docs",
+    "docs:serve": "vitepress serve docs"
+  },
+  "dependencies": {
+    "v3-dragblock": "workspace:^1.0.6"
+  },
+  "devDependencies": {
+    "vitepress": "1.0.0-alpha.45",
+    "vue": "^3.2.45"
+  }
+}

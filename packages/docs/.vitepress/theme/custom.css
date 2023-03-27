@@ -1,0 +1,31 @@
+
+
+::-webkit-scrollbar{
+  width:6px;
+  height:6px;
+  background-color: transparent;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track-piece{
+  width:24px;
+  background-color:transparent;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:vertical{
+  width:24px;
+  height:24px;
+  background: #f7f4f0;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:horizontal{
+  width:24px;
+  height:24px;
+  background: #f7f4f0;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-button{
+  display:none;
+}
+::-webkit-scrollbar-corner{
+  display:none;
+}
