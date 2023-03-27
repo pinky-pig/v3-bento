@@ -45,6 +45,11 @@ export function initGridContainer(
     }
     // 增加了
     else if (v > o) {
+      bentoCells.value.forEach((ele) => {
+        // 这里既然增加了，那么从第一行就会空着，一直到最后一行
+        if (ele.y > 0)
+          ele.x = 0
+      })
       const maxXValue = Math.max(...bentoCells.value.map(ele => ele.x + ele.width))
       bentoCells.value.forEach((ele) => {
         // 这里既然增加了，那么从第一行就会空着，一直到最后一行
