@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { useResizeObserver } from '@vueuse/core'
 import V3bento from '../../packages/v3-bento/src'
-import { cfg } from './bento-components'
 // import V3bento from '../../packages/v3-bento/dist/v3-bento.es.js'
 const print = (val: string, e: any) => {
   // eslint-disable-next-line no-console
@@ -10,14 +9,22 @@ const print = (val: string, e: any) => {
 }
 
 const maximumCells = ref(4)
-const size = ref(100)
+const size = ref(180)
 const gap = ref(10)
 
 const containerRef = ref(null)
 useResizeObserver(containerRef, (entries) => {
   const entry = entries[0]
   const { width } = entry.contentRect
-  maximumCells.value = Math.ceil(width / (size.value + gap.value))
+
+  if (Math.ceil(width / (size.value + gap.value)) <= 6) {
+    maximumCells.value = Math.ceil(width / (size.value + gap.value))
+    size.value = 180
+  }
+  else {
+    maximumCells.value = 6
+    size.value = 240
+  }
 })
 </script>
 
@@ -25,7 +32,6 @@ useResizeObserver(containerRef, (entries) => {
   <div ref="containerRef" class="container">
     <V3bento
       class="bento-container"
-      :bento-cells="cfg"
       :size="size"
       :gap="gap"
       :maximum-cells="maximumCells"
