@@ -31,6 +31,34 @@ export function initGridContainer(
       emit('dragEnd', bentoCells.value)
   })
 
+  // 监听最大单元格数
+  // 如果增加了最大单元格数，将下面一行的元素上移往右排列
+  // 如果减少了最大单元格数，将右边的元素往左排列
+  watch(() => propsOption.maximumCells, (v, o) => {
+    // 减少了
+    if (v < o) {
+      const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, v)
+      if (exceedingMaxCells.length) {
+        fixExceedingMaxCells(exceedingMaxCells, v)
+        fixOverlap(bentoCells.value)
+      }
+    }
+    // 增加了
+    else if (v > o) {
+      const maxXValue = Math.max(...bentoCells.value.map(ele => ele.x + ele.width))
+      bentoCells.value.forEach((ele) => {
+        // 这里既然增加了，那么从第一行就会空着，一直到最后一行
+        if (ele.y > 0) {
+          ele.y = 0
+          ele.x = maxXValue
+        }
+      })
+      const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, v)
+      fixExceedingMaxCells(exceedingMaxCells, v)
+      fixOverlap(bentoCells.value)
+    }
+  })
+
   // 1.初始化时，
   // 1.1检查是否有重叠的元素
   const overlap = checkOverlap(bentoCells.value)
@@ -42,8 +70,10 @@ export function initGridContainer(
   else {
     console.error('初始要素位置有重叠或超过边界值，使用默认布局')
     // unBindMouseEvent()
-    fixOverlap(bentoCells.value)
+    // 先将超过边界的元素移动到边界内
     fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells)
+    // 再将重叠的元素移动到不重叠的位置
+    fixOverlap(bentoCells.value)
     setTimeout(() => {
       bindMouseEvent()
       emit('dragEnd', bentoCells.value)
