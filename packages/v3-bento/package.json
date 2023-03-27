@@ -1,14 +1,14 @@
 {
   "name": "v3-bento",
   "type": "module",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": false,
   "author": "pinky-pig",
   "license": "MIT",
-  "homepage": "https://what-is-v3-bento.vercel.app/",
+  "homepage": "https://github.com/pinky-pig/what-is-v3-bento",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pinky-pig/v3-bento"
+    "url": "https://github.com/pinky-pig/what-is-v3-bento"
   },
   "keywords": [
     "vue3-bento",
