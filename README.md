@@ -13,9 +13,8 @@
 </p>
 
 使用 v3-bento 开发的示例。   
-使用文档地址：[Document](https://what-is-v3-bento.vercel.app/)  
-Versel 演示地址： [Demo - Vercel](https://v3-bento-demo.vercel.app/)  
-Github 代码地址： [Demo -Github](https://github.com/pinky-pig/what-is-drag-resize-attached-card)
+NPM 演示地址： <https://www.npmjs.com/package/v3-bento> 
+Github 代码地址： <https://github.com/pinky-pig/what-is-v3-bento>
 
 ## 🎉 Introduce
 
