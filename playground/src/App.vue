@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { defineComponent, h, markRaw } from 'vue'
-import V3bento from '../../packages/v3-bento/src'
+// import V3bento from '../../packages/v3-bento/src'
+import V3bento from '../../packages/v3-bento/dist/v3-bento.es.js'
+
 const cfg = [
   { id: '1', x: 0, y: 0, width: 1, height: 1, component: markRaw(createBentoCellComponent('Bento1', '1')) },
   { id: '2', x: 1, y: 0, width: 1, height: 1, component: markRaw(createBentoCellComponent('Bento2', '2')) },
