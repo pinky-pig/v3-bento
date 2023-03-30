@@ -33,7 +33,7 @@ const emit = defineEmits(['dragStart', 'dragEnd'])
 const bentoContainerWidth = computed(() => `${props.maximumCells * props.size + (props.maximumCells - 1) * props.gap}px`)
 const bentoContainerHeight = ref('500px')
 const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
-const bentoCells = ref(props.bentoCells)
+const bentoCells = computed(() => props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
 const proxyBox = ref<BentoCellsType>({
