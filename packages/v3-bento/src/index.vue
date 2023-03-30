@@ -54,7 +54,7 @@ watch(bentoCells, (n) => {
     return (prev.y + prev.height > current.y + current.height) ? prev : current
   })
   bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
-}, { deep: true })
+}, { deep: true, immediate: true })
 </script>
 
 <template>
