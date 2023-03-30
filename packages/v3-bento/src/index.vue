@@ -97,7 +97,9 @@ watch(bentoCells, (n) => {
   z-index: 9;
 }
 .bento-container{
-  touch-action:none;
+  /* touch-action 是为了解决 pointer 事件三次之后不生效的问题。其实这个监听改成 mouse 和 touch 就行了，后面优化 */
+  /* https://segmentfault.com/a/1190000040746305 */
+  touch-action: auto;
   height: v-bind(bentoContainerHeight);
   width: v-bind(bentoContainerWidth);
   transition: all 500ms ease 0s;
