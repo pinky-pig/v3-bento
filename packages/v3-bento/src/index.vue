@@ -4,7 +4,7 @@
 // 3.组件能占分别是 1,2 两种
 // 4.这里先假设每个单元格的尺寸为 100*100
 import type { Ref } from 'vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 import { initGridContainer } from './index.module'
 import type { BentoCellsType } from './index.module'
@@ -28,6 +28,7 @@ const props = defineProps({
 
 const emit = defineEmits(['dragStart', 'dragEnd'])
 const bentoContainerWidth = computed(() => `${props.maximumCells * props.size + (props.maximumCells - 1) * props.gap}px`)
+const bentoContainerHeight = ref('500px')
 const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
 const bentoCells = ref(props.bentoCells)
 const bentoContainerRef = ref()
@@ -44,6 +45,13 @@ const proxyBox = ref<BentoCellsType>({
 onMounted(() => {
   initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size, props, emit)
 })
+
+watch(bentoCells, (n) => {
+  const h = n.reduce((prev, current) => {
+    return (prev.y + prev.height > current.y + current.height) ? prev : current
+  })
+  bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
+}, { deep: true })
 </script>
 
 <template>
@@ -87,7 +95,7 @@ onMounted(() => {
 }
 .bento-container{
   touch-action:none;
-  height: 500px;
+  height: v-bind(bentoContainerHeight);
   width: v-bind(bentoContainerWidth);
   transition: all 500ms ease 0s;
   position: relative;
