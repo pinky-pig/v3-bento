@@ -24,6 +24,9 @@ const props = defineProps({
   gap: {
     default: 10,
   },
+  disabled: {
+    default: false,
+  },
 })
 
 const emit = defineEmits(['dragStart', 'dragEnd'])

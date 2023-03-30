@@ -33,6 +33,7 @@ useResizeObserver(containerRef, (entries) => {
     <V3bento
       class="bento-container"
       :size="size"
+      :disabled="false"
       :gap="gap"
       :maximum-cells="maximumCells"
       @drag-start="print('drag-start', $event)"

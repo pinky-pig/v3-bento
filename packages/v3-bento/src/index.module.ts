@@ -63,6 +63,12 @@ export function initGridContainer(
       fixOverlap(bentoCells.value)
     }
   })
+  watch(() => propsOption.disabled, (v, o) => {
+    if (v)
+      unBindMouseEvent()
+    else
+      bindMouseEvent()
+  })
 
   // 1.初始化时，
   // 1.1检查是否有重叠的元素
@@ -70,7 +76,8 @@ export function initGridContainer(
   // 1.2检查是否有超过边界的元素
   const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
   if (!overlap && !exceedingMaxCells.length) {
-    bindMouseEvent()
+    if (!propsOption.disabled && propsOption.disabled !== '')
+      bindMouseEvent()
   }
   else {
     console.error('初始要素位置有重叠或超过边界值，使用默认布局')
@@ -80,7 +87,8 @@ export function initGridContainer(
     // 再将重叠的元素移动到不重叠的位置
     fixOverlap(bentoCells.value)
     setTimeout(() => {
-      bindMouseEvent()
+      if (!propsOption.disabled && propsOption.disabled !== '')
+        bindMouseEvent()
       emit('dragEnd', bentoCells.value)
     })
   }
