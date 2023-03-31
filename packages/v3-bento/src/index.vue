@@ -104,11 +104,11 @@ watch(bentoCells, (n) => {
   width: v-bind(bentoContainerWidth);
   transition: all 500ms ease 0s;
   position: relative;
+  will-change: transform;
 }
 .bento-item ,
 .bento-item-placeholder{
   transition: all 500ms ease 0s;
-  will-change: transform;
   box-shadow: 0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
