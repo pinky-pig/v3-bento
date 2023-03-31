@@ -39,27 +39,25 @@ export function initGridContainer(
     if (v < o) {
       const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, v)
       if (exceedingMaxCells.length) {
-        fixExceedingMaxCells(exceedingMaxCells, v)
+        fixExceedingMaxCells(exceedingMaxCells, v, bentoCells.value)
         fixOverlap(bentoCells.value)
       }
     }
     // 增加了
     else if (v > o) {
-      bentoCells.value.forEach((ele) => {
-        // 这里既然增加了，那么从第一行就会空着，一直到最后一行
-        if (ele.y > 0)
-          ele.x = 0
+      // 从最后一个数，如果宽度小于 新增 的宽度，往右填充
+      // 如果不行，就倒数第二个，直到填充
+      const maxXObj = bentoCells.value.reduce((acc, ele) => {
+        return acc.x + acc.width > ele.x + ele.width ? acc : ele
       })
-      const maxXValue = Math.max(...bentoCells.value.map(ele => ele.x + ele.width))
-      bentoCells.value.forEach((ele) => {
-        // 这里既然增加了，那么从第一行就会空着，一直到最后一行
-        if (ele.y > 0) {
-          ele.y = 0
-          ele.x = maxXValue
+      const maxX = maxXObj.x + maxXObj.width
+      for (const lastCell of bentoCells.value) {
+        if (lastCell.width <= v - maxX && lastCell.y > 0) {
+          lastCell.x = maxX
+          lastCell.y = 0
+          break
         }
-      })
-      const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, v)
-      fixExceedingMaxCells(exceedingMaxCells, v)
+      }
       fixOverlap(bentoCells.value)
     }
   })
@@ -83,7 +81,7 @@ export function initGridContainer(
     console.error('初始要素位置有重叠或超过边界值，使用默认布局')
     // unBindMouseEvent()
     // 先将超过边界的元素移动到边界内
-    fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells)
+    fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells, bentoCells.value)
     // 再将重叠的元素移动到不重叠的位置
     fixOverlap(bentoCells.value)
     setTimeout(() => {
@@ -160,7 +158,7 @@ export function initGridContainer(
       // 3.1 当前拖拽的元素的位置是四舍五入的 Math.round() ，这里需要将其冒泡到最上面的位置
       // 3.2 冒泡完之后，就是插入。这里插入后，需要将所有的元素重新排列
       // 3.3 重新排列就是将所有碰撞过的元素都下移，这里使用一个递归的方式
-      const y = bubbleUp(proxyBox.value)
+      const y = bubbleUp(proxyBox.value, area)
       if (y < proxyBox.value.y)
         proxyBox.value.y = y
 
@@ -208,7 +206,7 @@ export function initGridContainer(
               if (cell) {
                 allCellsWithProxyByCurrent.forEach((n) => {
                   if (n.id === cell) {
-                    const y = bubbleUp(n)
+                    const y = bubbleUp(n, area)
                     if (y < n.y)
                       n.y = y
                   }
@@ -218,38 +216,6 @@ export function initGridContainer(
           }
           area = getArea(allCellsWithProxyByCurrent)
         }
-      }
-      /////////////////////////////////////////////////////////////////////////////////////
-
-      function bubbleUp(node: BentoCellsType) {
-        for (let row = node.y - 1; row >= 0; row--) {
-          // 如果一整行都为空，则直接继续往上找
-          if (area[row] === undefined)
-            continue
-          for (let col = node.x; col < node.x + node.width; col++) {
-            // todo: 这里需要重构，根据当前这个元素的高度，决定返回的行数是多少
-            // const count = allCellsWithProxyByCurrent.filter((n: { id: any }) => n.id === area[row][col])[0]?.height
-            if (
-              area[row]
-              && area[row + 1]
-              && area[row][col] !== undefined
-              && area[row + 1][col] !== undefined
-              && area[row][col] === area[row + 1][col]
-            ) {
-              // 这里是两行的情况
-              //  ██ || ██ ██
-              //  ██ || ██ ██
-            }
-            else
-            if (area[row][col] !== undefined) {
-              // 这里是一行的情况
-              // ██ || ██ ██
-              return row + 1
-            }
-          }
-        }
-
-        return 0
       }
     }
   }
@@ -288,6 +254,38 @@ export function initGridContainer(
       result = bentoCells.value.filter((ele: { id: string }) => ele.id === initElement.id)
 
     return result ? result[0] : null
+  }
+
+  // 将 node 在 area 冒泡向上
+  function bubbleUp(node: BentoCellsType, area: string[][]) {
+    for (let row = node.y - 1; row >= 0; row--) {
+      // 如果一整行都为空，则直接继续往上找
+      if (area[row] === undefined)
+        continue
+      for (let col = node.x; col < node.x + node.width; col++) {
+        // todo: 这里需要重构，根据当前这个元素的高度，决定返回的行数是多少
+        // const count = allCellsWithProxyByCurrent.filter((n: { id: any }) => n.id === area[row][col])[0]?.height
+        if (
+          area[row]
+          && area[row + 1]
+          && area[row][col] !== undefined
+          && area[row + 1][col] !== undefined
+          && area[row][col] === area[row + 1][col]
+        ) {
+          // 这里是两行的情况
+          //  ██ || ██ ██
+          //  ██ || ██ ██
+        }
+        else
+        if (area[row][col] !== undefined) {
+          // 这里是一行的情况
+          // ██ || ██ ██
+          return row + 1
+        }
+      }
+    }
+
+    return 0
   }
 
   // 返回值为一个二维数组。
@@ -336,16 +334,49 @@ export function initGridContainer(
         }
       }
     }
+
+    area = getArea(cells)
+    for (let row = 0; row <= area.length; row++) {
+      if (area[row] && area[row].length > 0) {
+        area[row].forEach((cell: string) => {
+          if (cell) {
+            cells.forEach((n) => {
+              if (n.id === cell) {
+                const y = bubbleUp(n, area)
+                if (y < n.y)
+                  n.y = y
+              }
+            })
+          }
+        })
+        area = getArea(cells)
+      }
+    }
   }
 
-  function fixExceedingMaxCells(cells: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[], maximumCells: number): void {
-    cells.forEach((ele) => {
-      if (ele.type === 'maxX')
-        ele.element.x = maximumCells - ele.element.width
-      else if (ele.type === 'minX')
+  function fixExceedingMaxCells(cells: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[], maximumCells: number, allCells: BentoCellsType[]): void {
+    const maxYObj = allCells.reduce((acc, ele) => {
+      return acc.y + acc.height > ele.y + ele.height ? acc : ele
+    })
+    const maxY = maxYObj.y + maxYObj.height
+
+    const maxXObj = bentoCells.value.reduce((acc, ele) => {
+      return acc.x + acc.width > ele.x + ele.width ? acc : ele
+    })
+    const maxX = maxXObj.x + maxXObj.width
+
+    cells.forEach((ele, index) => {
+      if (ele.type === 'maxX') {
+        ele.element.x = (maximumCells - ele.element.width) < 0 ? 0 : maximumCells - ele.element.width
+        ele.element.y = maxY + index
+      }
+      else if (ele.type === 'minX') {
         ele.element.x = 0
-      else if (ele.type === 'minY')
+      }
+      else if (ele.type === 'minY') {
         ele.element.y = 0
+        ele.element.x = maxX + index
+      }
     })
   }
   // 是否有超过边界的值

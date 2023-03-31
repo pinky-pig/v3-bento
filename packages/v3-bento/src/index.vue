@@ -33,7 +33,7 @@ const emit = defineEmits(['dragStart', 'dragEnd'])
 const bentoContainerWidth = computed(() => `${props.maximumCells * props.size + (props.maximumCells - 1) * props.gap}px`)
 const bentoContainerHeight = ref('500px')
 const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
-const bentoCells = computed(() => props.bentoCells)
+const bentoCells = ref(props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
 const proxyBox = ref<BentoCellsType>({
@@ -51,8 +51,10 @@ onMounted(() => {
 
 watch(bentoCells, (n) => {
   const h = n.reduce((prev, current) => {
-    return (prev.y + prev.height > current.y + current.height) ? prev : current
+    return (prev?.y + prev?.height > current?.y + current?.height) ? prev : current
   })
+  if (!h)
+    return
   bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
 }, { deep: true, immediate: true })
 </script>
