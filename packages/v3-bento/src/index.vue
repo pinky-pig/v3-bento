@@ -57,6 +57,125 @@ watch(bentoCells, (n) => {
     return
   bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
 }, { deep: true, immediate: true })
+
+// 初始化设置格子的位置
+// 因为每个格子限制大小 1*1 || 1*2 || 2*1 || 2*2
+// 以下都是四个格子的代码
+sortDefault()
+function sortDefault() {
+  const totalHeight = bentoCells.value.reduce((sum, item) => sum + item.y + item.height, 0)
+  const chessboard: number[][] = new Array(totalHeight).fill(0).map(() => new Array(props.maximumCells).fill(0))
+
+  const cell11: BentoCellsType[] = []
+  const cell12: BentoCellsType[] = []
+  const cell21: BentoCellsType[] = []
+  const cell22: BentoCellsType[] = []
+  bentoCells.value.forEach((item, index) => {
+    if (item.width === 1 && item.height === 1)
+      cell11.push(item)
+    else if (item.width === 1 && item.height === 2)
+      cell12.push(item)
+    else if (item.width === 2 && item.height === 1)
+      cell21.push(item)
+    else if (item.width === 2 && item.height === 2)
+      cell22.push(item)
+  })
+
+  // 1. 先把 2*2 的放进去
+  // 2. 再把 2*1 的放进去
+  // 3. 再把 1*2 的放进去
+  // 4. 最后把 1*1 的放进去
+
+  for (let index = 0; index < cell22.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (
+          chessboard[row][col] === 0
+          && chessboard[row][col + 1] === 0
+          && chessboard[row + 1][col] === 0
+          && chessboard[row + 1][col + 1] === 0
+        ) {
+        // 说明是空的
+          cell22[index].x = col
+          cell22[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row][col + 1] = 1
+          chessboard[row + 1][col] = 1
+          chessboard[row + 1][col + 1] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+  for (let index = 0; index < cell21.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (chessboard[row][col] === 0) {
+        // 说明是空的
+          cell21[index].x = col
+          cell21[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row][col + 1] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+
+  for (let index = 0; index < cell12.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (
+          chessboard[row][col] === 0
+          && chessboard[row + 1][col] === 0
+        ) {
+          cell12[index].x = col
+          cell12[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row + 1][col] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+
+  for (let index = 0; index < cell11.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (chessboard[row][col] === 0) {
+          cell11[index].x = col
+          cell11[index].y = row
+          chessboard[row][col] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+}
 </script>
 
 <template>

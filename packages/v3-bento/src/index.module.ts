@@ -34,6 +34,15 @@ export function initGridContainer(
   // 监听最大单元格数
   // 如果增加了最大单元格数，将下面一行的元素上移往右排列
   // 如果减少了最大单元格数，将右边的元素往左排列
+
+  // [
+  //   [0, 0, 0, 0]
+  //   [0, 0, 0, 0]
+  //   [0, 0, 0, 0]
+  //   [0, 0, 0, 0]
+  //   [0, 0, 0, 0]
+  //   [0, 0, 0, 0]
+  // ]
   watch(() => propsOption.maximumCells, (v, o) => {
     // 减少了
     if (v < o) {
@@ -81,14 +90,14 @@ export function initGridContainer(
     console.error('初始要素位置有重叠或超过边界值，使用默认布局')
     // unBindMouseEvent()
     // 先将超过边界的元素移动到边界内
-    fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells, bentoCells.value)
-    // 再将重叠的元素移动到不重叠的位置
-    fixOverlap(bentoCells.value)
-    setTimeout(() => {
-      if (!propsOption.disabled && propsOption.disabled !== '')
-        bindMouseEvent()
-      emit('dragEnd', bentoCells.value)
-    })
+    // fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells, bentoCells.value)
+    // // 再将重叠的元素移动到不重叠的位置
+    // fixOverlap(bentoCells.value)
+    // setTimeout(() => {
+    //   if (!propsOption.disabled && propsOption.disabled !== '')
+    //     bindMouseEvent()
+    //   emit('dragEnd', bentoCells.value)
+    // })
   }
 
   function bindMouseEvent() {
