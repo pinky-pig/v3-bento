@@ -34,41 +34,8 @@ export function initGridContainer(
   // 监听最大单元格数
   // 如果增加了最大单元格数，将下面一行的元素上移往右排列
   // 如果减少了最大单元格数，将右边的元素往左排列
-
-  // [
-  //   [0, 0, 0, 0]
-  //   [0, 0, 0, 0]
-  //   [0, 0, 0, 0]
-  //   [0, 0, 0, 0]
-  //   [0, 0, 0, 0]
-  //   [0, 0, 0, 0]
-  // ]
   watch(() => propsOption.maximumCells, (v, o) => {
-    // 减少了
-    if (v < o) {
-      const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, v)
-      if (exceedingMaxCells.length) {
-        fixExceedingMaxCells(exceedingMaxCells, v, bentoCells.value)
-        fixOverlap(bentoCells.value)
-      }
-    }
-    // 增加了
-    else if (v > o) {
-      // 从最后一个数，如果宽度小于 新增 的宽度，往右填充
-      // 如果不行，就倒数第二个，直到填充
-      const maxXObj = bentoCells.value.reduce((acc, ele) => {
-        return acc.x + acc.width > ele.x + ele.width ? acc : ele
-      })
-      const maxX = maxXObj.x + maxXObj.width
-      for (const lastCell of bentoCells.value) {
-        if (lastCell.width <= v - maxX && lastCell.y > 0) {
-          lastCell.x = maxX
-          lastCell.y = 0
-          break
-        }
-      }
-      fixOverlap(bentoCells.value)
-    }
+    sortDefault(bentoCells, v)
   })
   watch(() => propsOption.disabled, (v, o) => {
     if (v)
@@ -77,28 +44,8 @@ export function initGridContainer(
       bindMouseEvent()
   })
 
-  // 1.初始化时，
-  // 1.1检查是否有重叠的元素
-  const overlap = checkOverlap(bentoCells.value)
-  // 1.2检查是否有超过边界的元素
-  const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
-  if (!overlap && !exceedingMaxCells.length) {
-    if (!propsOption.disabled && propsOption.disabled !== '')
-      bindMouseEvent()
-  }
-  else {
-    console.error('初始要素位置有重叠或超过边界值，使用默认布局')
-    // unBindMouseEvent()
-    // 先将超过边界的元素移动到边界内
-    // fixExceedingMaxCells(exceedingMaxCells, propsOption.maximumCells, bentoCells.value)
-    // // 再将重叠的元素移动到不重叠的位置
-    // fixOverlap(bentoCells.value)
-    // setTimeout(() => {
-    //   if (!propsOption.disabled && propsOption.disabled !== '')
-    //     bindMouseEvent()
-    //   emit('dragEnd', bentoCells.value)
-    // })
-  }
+  if (!propsOption.disabled && propsOption.disabled !== '')
+    bindMouseEvent()
 
   function bindMouseEvent() {
     window.addEventListener('pointerdown', mousedown, false)
@@ -239,21 +186,6 @@ export function initGridContainer(
     isDragging.value = false
   }
 
-  // 判断传递过来的要素是否有重叠。true表示有重叠，false表示没有重叠
-  function checkOverlap(elements: BentoCellsType[]): boolean {
-    for (let i = 0; i < elements.length; i++) {
-      const ele1 = elements[i]
-      for (let j = i + 1; j < elements.length; j++) {
-        const ele2 = elements[j]
-        const xOverlap = ele1.x + ele1.width > ele2.x && ele1.x < ele2.x + ele2.width
-        const yOverlap = ele1.y + ele1.height > ele2.y && ele1.y < ele2.y + ele2.height
-        if (xOverlap && yOverlap)
-          return true
-      }
-    }
-    return false
-  }
-
   // 获取当前点击的元素
   function getCellObjectInStoreFromPosition(position: { x: number; y: number }): Object | null {
     let result: any = null
@@ -264,161 +196,268 @@ export function initGridContainer(
 
     return result ? result[0] : null
   }
+}
 
-  // 将 node 在 area 冒泡向上
-  function bubbleUp(node: BentoCellsType, area: string[][]) {
-    for (let row = node.y - 1; row >= 0; row--) {
-      // 如果一整行都为空，则直接继续往上找
-      if (area[row] === undefined)
-        continue
-      for (let col = node.x; col < node.x + node.width; col++) {
-        // todo: 这里需要重构，根据当前这个元素的高度，决定返回的行数是多少
-        // const count = allCellsWithProxyByCurrent.filter((n: { id: any }) => n.id === area[row][col])[0]?.height
+export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOption: any) {
+  const overlap = checkOverlap(bentoCells.value)
+  const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
+
+  if (overlap || exceedingMaxCells.length) {
+    // 说明有重叠或者是超过了边界
+    sortDefault(bentoCells, propsOption.maximumCells)
+  }
+}
+function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
+  const totalHeight = bentoCells.value.reduce((sum, item) => sum + item.y + item.height, 0)
+  const chessboard: number[][] = new Array(totalHeight).fill(0).map(() => new Array(maximumCells).fill(0))
+
+  const cell11: BentoCellsType[] = []
+  const cell12: BentoCellsType[] = []
+  const cell21: BentoCellsType[] = []
+  const cell22: BentoCellsType[] = []
+  bentoCells.value.forEach((item, index) => {
+    if (item.width === 1 && item.height === 1)
+      cell11.push(item)
+    else if (item.width === 1 && item.height === 2)
+      cell12.push(item)
+    else if (item.width === 2 && item.height === 1)
+      cell21.push(item)
+    else if (item.width === 2 && item.height === 2)
+      cell22.push(item)
+  })
+
+  // 1. 先把 2*2 的放进去
+  // 2. 再把 2*1 的放进去
+  // 3. 再把 1*2 的放进去
+  // 4. 最后把 1*1 的放进去
+  for (let index = 0; index < cell22.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
         if (
-          area[row]
-          && area[row + 1]
-          && area[row][col] !== undefined
-          && area[row + 1][col] !== undefined
-          && area[row][col] === area[row + 1][col]
+          chessboard[row][col] === 0
+          && chessboard[row][col + 1] === 0
+          && chessboard[row + 1][col] === 0
+          && chessboard[row + 1][col + 1] === 0
         ) {
-          // 这里是两行的情况
-          //  ██ || ██ ██
-          //  ██ || ██ ██
-        }
-        else
-        if (area[row][col] !== undefined) {
-          // 这里是一行的情况
-          // ██ || ██ ██
-          return row + 1
+        // 说明是空的
+          cell22[index].x = col
+          cell22[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row][col + 1] = 1
+          chessboard[row + 1][col] = 1
+          chessboard[row + 1][col + 1] = 1
+          foundCell = true
+          break
         }
       }
     }
-
-    return 0
   }
+  for (let index = 0; index < cell21.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
 
-  // 返回值为一个二维数组。
-  // 该函数通过遍历输入的节点数组，将节点的id按照其位置信息记录在返回的二维数组中。
-  // 具体实现方式为，先遍历每个节点，再通过两层循环分别遍历节点所占据的行和列，
-  // 最后将该位置上的元素设为当前节点的id。
-  function getArea(nodes: BentoCellsType[]) {
-    const area: any = []
-    nodes.forEach((n) => {
-      for (let row = n.y; row < n.y + n.height; row++) {
-        const rowArr = area[row]
-        if (rowArr === undefined)
-          area[row] = []
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
 
-        for (let col = n.x; col < n.x + n.width; col++)
-          area[row][col] = n.id
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (chessboard[row][col] === 0
+          && chessboard[row][col + 1] === 0
+        ) {
+        // 说明是空的
+          cell21[index].x = col
+          cell21[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row][col + 1] = 1
+          foundCell = true
+          break
+        }
       }
-    })
-    return area
+    }
+  }
+  for (let index = 0; index < cell12.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (
+          chessboard[row][col] === 0
+          && chessboard[row + 1][col] === 0
+        ) {
+          cell12[index].x = col
+          cell12[index].y = row
+          chessboard[row][col] = 1
+          chessboard[row + 1][col] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+  for (let index = 0; index < cell11.length; index++) {
+    let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
+
+    for (let row = 0; row < chessboard.length; row++) {
+      if (foundCell)
+        break
+
+      for (let col = 0; col < chessboard[row].length; col++) {
+        if (chessboard[row][col] === 0) {
+          cell11[index].x = col
+          cell11[index].y = row
+          chessboard[row][col] = 1
+          foundCell = true
+          break
+        }
+      }
+    }
+  }
+}
+// 判断传递过来的要素是否有重叠。true表示有重叠，false表示没有重叠
+function checkOverlap(elements: BentoCellsType[]): boolean {
+  for (let i = 0; i < elements.length; i++) {
+    const ele1 = elements[i]
+    for (let j = i + 1; j < elements.length; j++) {
+      const ele2 = elements[j]
+      const xOverlap = ele1.x + ele1.width > ele2.x && ele1.x < ele2.x + ele2.width
+      const yOverlap = ele1.y + ele1.height > ele2.y && ele1.y < ele2.y + ele2.height
+      if (xOverlap && yOverlap)
+        return true
+    }
+  }
+  return false
+}
+// 将 node 在 area 冒泡向上
+function bubbleUp(node: BentoCellsType, area: string[][]) {
+  for (let row = node.y - 1; row >= 0; row--) {
+    // 如果一整行都为空，则直接继续往上找
+    if (area[row] === undefined)
+      continue
+    for (let col = node.x; col < node.x + node.width; col++) {
+      // todo: 这里需要重构，根据当前这个元素的高度，决定返回的行数是多少
+      // const count = allCellsWithProxyByCurrent.filter((n: { id: any }) => n.id === area[row][col])[0]?.height
+      if (
+        area[row]
+        && area[row + 1]
+        && area[row][col] !== undefined
+        && area[row + 1][col] !== undefined
+        && area[row][col] === area[row + 1][col]
+      ) {
+        // 这里是两行的情况
+        //  ██ || ██ ██
+        //  ██ || ██ ██
+      }
+      else
+      if (area[row][col] !== undefined) {
+        // 这里是一行的情况
+        // ██ || ██ ██
+        return row + 1
+      }
+    }
   }
 
-  // 检查两个元素是否发生碰撞的功能函数
-  // 元素 a 的左侧坐标小于元素 b 的右侧坐标。
-  // 元素 a 的右侧坐标大于元素 b 的左侧坐标。
-  // 元素 a 的上方坐标小于元素 b 的下方坐标。
-  // 元素 a 的下方坐标大于元素 b 的上方坐标
-  function checkHit(a: BentoCellsType, b: BentoCellsType) {
-    return (
-      a.x < b.x + b.width
+  return 0
+}
+// 返回值为一个二维数组。
+// 该函数通过遍历输入的节点数组，将节点的id按照其位置信息记录在返回的二维数组中。
+// 具体实现方式为，先遍历每个节点，再通过两层循环分别遍历节点所占据的行和列，
+// 最后将该位置上的元素设为当前节点的id。
+function getArea(nodes: BentoCellsType[]) {
+  const area: any = []
+  nodes.forEach((n) => {
+    for (let row = n.y; row < n.y + n.height; row++) {
+      const rowArr = area[row]
+      if (rowArr === undefined)
+        area[row] = []
+
+      for (let col = n.x; col < n.x + n.width; col++)
+        area[row][col] = n.id
+    }
+  })
+  return area
+}
+// 检查两个元素是否发生碰撞的功能函数
+// 元素 a 的左侧坐标小于元素 b 的右侧坐标。
+// 元素 a 的右侧坐标大于元素 b 的左侧坐标。
+// 元素 a 的上方坐标小于元素 b 的下方坐标。
+// 元素 a 的下方坐标大于元素 b 的上方坐标
+function checkHit(a: BentoCellsType, b: BentoCellsType) {
+  return (
+    a.x < b.x + b.width
           && a.x + a.width > b.x
           && a.y < b.y + b.height
           && a.y + a.height > b.y
-    )
+  )
+}
+// 将重叠的元素移动到下面
+function fixOverlap(cells: BentoCellsType[]): void {
+  const n = cells.length
+  for (let i = 0; i < n - 1; i++) {
+    const cell1 = cells[i]
+    for (let j = i + 1; j < n; j++) {
+      const cell2 = cells[j]
+      if (checkHit(cell1, cell2)) {
+        const dy = Math.max(0, cell1.y + cell1.height)
+        cell2.y = dy
+      }
+    }
   }
 
-  // 将重叠的元素移动到下面
-  function fixOverlap(cells: BentoCellsType[]): void {
-    const n = cells.length
-    for (let i = 0; i < n - 1; i++) {
-      const cell1 = cells[i]
-      for (let j = i + 1; j < n; j++) {
-        const cell2 = cells[j]
-        if (checkHit(cell1, cell2)) {
-          const dy = Math.max(0, cell1.y + cell1.height)
-          cell2.y = dy
+  area = getArea(cells)
+  for (let row = 0; row <= area.length; row++) {
+    if (area[row] && area[row].length > 0) {
+      area[row].forEach((cell: string) => {
+        if (cell) {
+          cells.forEach((n) => {
+            if (n.id === cell) {
+              const y = bubbleUp(n, area)
+              if (y < n.y)
+                n.y = y
+            }
+          })
         }
-      }
+      })
+      area = getArea(cells)
     }
-
-    area = getArea(cells)
-    for (let row = 0; row <= area.length; row++) {
-      if (area[row] && area[row].length > 0) {
-        area[row].forEach((cell: string) => {
-          if (cell) {
-            cells.forEach((n) => {
-              if (n.id === cell) {
-                const y = bubbleUp(n, area)
-                if (y < n.y)
-                  n.y = y
-              }
-            })
-          }
+  }
+}
+// 是否有超过边界的值
+function checkExceedingMaxCells(bentoCells: BentoCellsType[], maximumCells: number) {
+  const exceedingElements: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[] = []
+  bentoCells.forEach((element) => {
+    const maxX = element.x + element.width
+    const minX = element.x
+    const minY = element.y
+    switch (true) {
+      case maxX > maximumCells:
+        exceedingElements.push({
+          element,
+          type: 'maxX',
         })
-        area = getArea(cells)
-      }
+        break
+      case minX < 0:
+        exceedingElements.push({
+          element,
+          type: 'minX',
+        })
+        break
+      case minY < 0:
+        exceedingElements.push({
+          element,
+          type: 'minY',
+        })
+        break
+
+      default:
+        break
     }
-  }
-
-  function fixExceedingMaxCells(cells: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[], maximumCells: number, allCells: BentoCellsType[]): void {
-    const maxYObj = allCells.reduce((acc, ele) => {
-      return acc.y + acc.height > ele.y + ele.height ? acc : ele
-    })
-    const maxY = maxYObj.y + maxYObj.height
-
-    const maxXObj = bentoCells.value.reduce((acc, ele) => {
-      return acc.x + acc.width > ele.x + ele.width ? acc : ele
-    })
-    const maxX = maxXObj.x + maxXObj.width
-
-    cells.forEach((ele, index) => {
-      if (ele.type === 'maxX') {
-        ele.element.x = (maximumCells - ele.element.width) < 0 ? 0 : maximumCells - ele.element.width
-        ele.element.y = maxY + index
-      }
-      else if (ele.type === 'minX') {
-        ele.element.x = 0
-      }
-      else if (ele.type === 'minY') {
-        ele.element.y = 0
-        ele.element.x = maxX + index
-      }
-    })
-  }
-  // 是否有超过边界的值
-  function checkExceedingMaxCells(bentoCells: BentoCellsType[], maximumCells: number) {
-    const exceedingElements: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[] = []
-    bentoCells.forEach((element) => {
-      const maxX = element.x + element.width
-      const minX = element.x
-      const minY = element.y
-      switch (true) {
-        case maxX > maximumCells:
-          exceedingElements.push({
-            element,
-            type: 'maxX',
-          })
-          break
-        case minX < 0:
-          exceedingElements.push({
-            element,
-            type: 'minX',
-          })
-          break
-        case minY < 0:
-          exceedingElements.push({
-            element,
-            type: 'minY',
-          })
-          break
-
-        default:
-          break
-      }
-    })
-    return exceedingElements
-  }
+  })
+  return exceedingElements
 }
