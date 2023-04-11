@@ -44,6 +44,10 @@ const proxyBox = ref<BentoCellsType>({
   width: 0,
   height: 0,
 })
+
+// 0. 初始化设置格子的位置
+isNeedDefaultLayout(bentoCells, props)
+
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
   initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size, props, emit)
@@ -58,9 +62,6 @@ watch(bentoCells, (n) => {
     return
   bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
 }, { deep: true, immediate: true })
-
-// 3. 初始化设置格子的位置
-isNeedDefaultLayout(bentoCells, props)
 </script>
 
 <template>

@@ -23,7 +23,7 @@ export function initGridContainer(
   propsOption: any,
   emit: any,
 ) {
-  // 监听拖拽事件返回
+  // 1. 监听拖拽事件返回
   watch(isDragging, (v, o) => {
     if (v)
       emit('dragStart', currentClickedElement.value)
@@ -31,27 +31,25 @@ export function initGridContainer(
       emit('dragEnd', bentoCells.value)
   })
 
-  // 监听最大单元格数
-  // 如果增加了最大单元格数，将下面一行的元素上移往右排列
-  // 如果减少了最大单元格数，将右边的元素往左排列
+  // 2. 监听最大单元格数
   watch(() => propsOption.maximumCells, (v, o) => {
     sortDefault(bentoCells, v)
   })
+
+  // 3. 监听是否禁用
   watch(() => propsOption.disabled, (v, o) => {
     if (v)
       unBindMouseEvent()
     else
       bindMouseEvent()
-  })
-
-  if (!propsOption.disabled && propsOption.disabled !== '')
-    bindMouseEvent()
+  }, { immediate: true })
 
   function bindMouseEvent() {
     window.addEventListener('pointerdown', mousedown, false)
     window.addEventListener('pointermove', mousemove, false)
     window.addEventListener('pointerup', mouseup, false)
   }
+
   function unBindMouseEvent() {
     window.removeEventListener('pointerdown', mousedown, false)
     window.removeEventListener('pointermove', mousemove, false)
@@ -186,7 +184,6 @@ export function initGridContainer(
     isDragging.value = false
   }
 
-  // 获取当前点击的元素
   function getCellObjectInStoreFromPosition(position: { x: number; y: number }): Object | null {
     let result: any = null
     const point = { x: position.x, y: position.y }
@@ -198,6 +195,7 @@ export function initGridContainer(
   }
 }
 
+// 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
 export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOption: any) {
   const overlap = checkOverlap(bentoCells.value)
   const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
@@ -395,38 +393,6 @@ function checkHit(a: BentoCellsType, b: BentoCellsType) {
           && a.y < b.y + b.height
           && a.y + a.height > b.y
   )
-}
-// 将重叠的元素移动到下面
-function fixOverlap(cells: BentoCellsType[]): void {
-  const n = cells.length
-  for (let i = 0; i < n - 1; i++) {
-    const cell1 = cells[i]
-    for (let j = i + 1; j < n; j++) {
-      const cell2 = cells[j]
-      if (checkHit(cell1, cell2)) {
-        const dy = Math.max(0, cell1.y + cell1.height)
-        cell2.y = dy
-      }
-    }
-  }
-
-  area = getArea(cells)
-  for (let row = 0; row <= area.length; row++) {
-    if (area[row] && area[row].length > 0) {
-      area[row].forEach((cell: string) => {
-        if (cell) {
-          cells.forEach((n) => {
-            if (n.id === cell) {
-              const y = bubbleUp(n, area)
-              if (y < n.y)
-                n.y = y
-            }
-          })
-        }
-      })
-      area = getArea(cells)
-    }
-  }
 }
 // 是否有超过边界的值
 function checkExceedingMaxCells(bentoCells: BentoCellsType[], maximumCells: number) {
