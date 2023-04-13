@@ -25,10 +25,17 @@ export function initGridContainer(
 ) {
   // 1. 监听拖拽事件返回
   watch(isDragging, (v, o) => {
-    if (v)
+    if (v) {
       emit('dragStart', currentClickedElement.value)
-    else if (!v)
+      // 设置所有的class 为 .bento-item 的 cursor 为 move
+      document.body.style.cursor = 'grabbing'
+      // const bentoItems: NodeListOf<Element> = document.querySelectorAll('.bento-item')
+      // bentoItems.forEach((item: Element) => item.style.cursor = 'grabbing')
+    }
+    else if (!v) {
       emit('dragEnd', bentoCells.value)
+      document.body.style.cursor = 'unset'
+    }
   })
 
   // 2. 监听最大单元格数

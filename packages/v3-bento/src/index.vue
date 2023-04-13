@@ -113,6 +113,9 @@ watch(bentoCells, (n) => {
   position: relative;
   will-change: transform;
 }
+.bento-item:hover{
+  cursor: grab;
+}
 .bento-item ,
 .bento-item-placeholder{
   transition: all 500ms ease 0s;
