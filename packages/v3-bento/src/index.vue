@@ -79,8 +79,11 @@ watch(bentoCells, (n) => {
       :class="item !== currentClickedElement ? 'bento-item ' : 'z-9'"
       :style="{
         position: 'absolute',
-        left: `${item.x * (props.size + props.gap)}px`,
-        top: `${item.y * (props.size + props.gap)}px`,
+        transform: `
+          translate3d(
+            ${item.x * (props.size + props.gap)}px,
+            ${item.y * (props.size + props.gap)}px,
+          0)`,
         width: `${item.width === 2 ? item.width * props.size + props.gap : item.width * props.size}px`,
         height: `${item.height === 2 ? item.height * props.size + props.gap : item.height * props.size}px`,
       }"
@@ -90,8 +93,12 @@ watch(bentoCells, (n) => {
       class="bento-item-placeholder"
       :style="{
         position: 'absolute',
-        left: `${proxyBox.x * (props.size + props.gap)}px`,
-        top: `${proxyBox.y * (props.size + props.gap)}px`,
+        transform: `
+          translate3d(
+            ${proxyBox.x * (props.size + props.gap)}px,
+            ${proxyBox.y * (props.size + props.gap)}px,
+          0)`,
+
         width: `${proxyBox.width === 2 ? proxyBox.width * props.size + props.gap : proxyBox.width * props.size}px`,
         height: `${proxyBox.height === 2 ? proxyBox.height * props.size + props.gap : proxyBox.height * props.size}px`,
       }"
