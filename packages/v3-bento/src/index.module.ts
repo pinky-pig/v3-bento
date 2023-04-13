@@ -69,7 +69,7 @@ export function initGridContainer(
     if (currentClickedElement.value) {
       isDragging.value = true
       // place-holder
-      proxyBox.value = Object.assign({ tag: 'proxy' }, currentClickedElement.value)
+      proxyBox.value = Object.assign({ }, currentClickedElement.value)
       // 将当前拖拽的元素放到最上面
       const index = bentoCells.value.findIndex((ele: { id: any }) => ele.id === currentClickedElement.value.id)
       if (index !== -1) {
