@@ -76,6 +76,14 @@ export function initGridContainer(
         const ele = bentoCells.value.splice(index, 1)
         bentoCells.value.push(ele[0])
       }
+
+      // 将其排个序
+      bentoCells.value = bentoCells.value.sort((a, b) => {
+        if (a.y !== b.y)
+          return a.y - b.y // 按照 y 值升序排序
+        else
+          return a.x - b.x // 在同一行内，按照 x 值升序排序
+      })
     }
   }
   function mousemove(e: MouseEvent) {
@@ -189,12 +197,6 @@ export function initGridContainer(
     mouseFrom.x = 0
     mouseFrom.y = 0
     // 拖拽完成后，数组按照布局顺序排列
-    bentoCells.value = bentoCells.value.sort((a, b) => {
-      if (a.y !== b.y)
-        return a.y - b.y // 按照 y 值升序排序
-      else
-        return a.x - b.x // 在同一行内，按照 x 值升序排序
-    })
     isDragging.value = false
   }
 
