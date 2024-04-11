@@ -210,8 +210,8 @@ export function initGridContainer(
       initElement = initElement.parentElement
 
     // 要是找得到就继续下面的逻辑了
-    if (initElement)
-      result = bentoCells.value.filter((ele: { id: string }) => ele.id === initElement.id)
+    if (initElement !== null && initElement.id)
+      result = bentoCells.value.filter((ele: { id: string }) => ele.id === initElement?.id)
 
     return result ? result[0] : null
   }
