@@ -121,7 +121,7 @@ export function initGridContainer(
       // 2.当前的元素要拖拽，于是将当前的元素抽出来，剩下的元素重新排列
       area = getArea(allCellsWithProxyByCurrent)
       const lineCount = area.length
-      arrangeByLine()
+      arrangeByLine(lineCount, allCellsWithProxyByCurrent)
 
       // 3.剩下的元素重新排列之后，现在插入当前拖拽的元素
       // 3.1 当前拖拽的元素的位置是四舍五入的 Math.round() ，这里需要将其冒泡到最上面的位置
@@ -134,57 +134,57 @@ export function initGridContainer(
       // 将 allCellsWithProxyByCurrent 按照 area 从上至下的顺序重新排列
       const allCellByAreaSort = getAllCellsByArea(area, allCellsWithProxyByCurrent)
       hitAllEle(proxyBox.value, allCellByAreaSort)
-      // todo: 需要限制递归深度，避免无限递归导致的性能问题
-      // 这里会有个元素重叠的情况。一般情况下，不会出现，因为碰撞走了
-      // 但是如果碰撞没有走，那么就会出现重叠的情况，这样这里的递归会一直走，这里需要处理
-      function hitAllEle(node: BentoCellsType, allNodes: BentoCellsType[]) {
-        // area = getArea(allCellsWithProxyByCurrent)
-        const hittedNodes: any = []
+    }
+    // todo: 需要限制递归深度，避免无限递归导致的性能问题
+    // 这里会有个元素重叠的情况。一般情况下，不会出现，因为碰撞走了
+    // 但是如果碰撞没有走，那么就会出现重叠的情况，这样这里的递归会一直走，这里需要处理
+    function hitAllEle(node: BentoCellsType, allNodes: BentoCellsType[]) {
+      // area = getArea(allCellsWithProxyByCurrent)
+      const hittedNodes: any = []
 
-        // 1.找到当前元素第一层碰撞的元素
-        allNodes.forEach((n: BentoCellsType, index: number) => {
-          if (node.id !== n.id && checkHit(node, n)) {
-            // 将当前碰撞的要素添加到数组中
-            hittedNodes.push(n)
-          }
-        })
-        // 2.碰撞到了之后，一格一格移动
-        hittedNodes.forEach((n: BentoCellsType) => {
-          for (let h = n.y + 1; h <= node.y + node.height; h++) {
-            n.y = h
-            // 每次移动一格之后，就来检测一下，是否还有元素被碰撞
-            hitAllEle(n, allNodes)
-          }
-        })
-      }
-      function getAllCellsByArea(area: string[][], allCells: BentoCellsType[]) {
-        const result: BentoCellsType[] = []
-        // 数组去重
-        Array.from(new Set(area.flat())).forEach((cell: string) => {
-          allCells.forEach((n) => {
-            if (n.id === cell && result.findIndex((ele: BentoCellsType) => ele.id === n.id) === -1)
-              result.push(n)
-          })
-        })
-        return result
-      }
-      function arrangeByLine() {
-        for (let row = 0; row < lineCount; row++) {
-          if (area[row] && area[row].length > 0) {
-            area[row].forEach((cell: string) => {
-              if (cell) {
-                allCellsWithProxyByCurrent.forEach((n) => {
-                  if (n.id === cell) {
-                    const y = bubbleUp(n, area)
-                    if (y < n.y)
-                      n.y = y
-                  }
-                })
-              }
-            })
-          }
-          area = getArea(allCellsWithProxyByCurrent)
+      // 1.找到当前元素第一层碰撞的元素
+      allNodes.forEach((n: BentoCellsType, index: number) => {
+        if (node.id !== n.id && checkHit(node, n)) {
+          // 将当前碰撞的要素添加到数组中
+          hittedNodes.push(n)
         }
+      })
+      // 2.碰撞到了之后，一格一格移动
+      hittedNodes.forEach((n: BentoCellsType) => {
+        for (let h = n.y + 1; h <= node.y + node.height; h++) {
+          n.y = h
+          // 每次移动一格之后，就来检测一下，是否还有元素被碰撞
+          hitAllEle(n, allNodes)
+        }
+      })
+    }
+    function getAllCellsByArea(area: string[][], allCells: BentoCellsType[]) {
+      const result: BentoCellsType[] = []
+      // 数组去重
+      Array.from(new Set(area.flat())).forEach((cell: string) => {
+        allCells.forEach((n) => {
+          if (n.id === cell && result.findIndex((ele: BentoCellsType) => ele.id === n.id) === -1)
+            result.push(n)
+        })
+      })
+      return result
+    }
+    function arrangeByLine(lineCount :number, allCellsWithProxyByCurrent: BentoCellsType[]) {
+      for (let row = 0; row < lineCount; row++) {
+        if (area[row] && area[row].length > 0) {
+          area[row].forEach((cell: string) => {
+            if (cell) {
+              allCellsWithProxyByCurrent.forEach((n) => {
+                if (n.id === cell) {
+                  const y = bubbleUp(n, area)
+                  if (y < n.y)
+                    n.y = y
+                }
+              })
+            }
+          })
+        }
+        area = getArea(allCellsWithProxyByCurrent)
       }
     }
   }

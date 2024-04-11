@@ -6,37 +6,39 @@
 import type { Ref } from 'vue'
 import { computed, onMounted, ref, watch } from 'vue'
 
-import { initGridContainer, isNeedDefaultLayout } from './index.module'
-import type { BentoCellsType } from './index.module'
-import { cfg } from './config'
 import { generateUuid } from './uuid'
+import { initGridContainer, isNeedDefaultLayout } from './index'
+import type { BentoCellsType } from './index'
 
-const props = defineProps({
-  bentoCells: {
-    default: cfg as BentoCellsType[],
+const props = withDefaults(
+  defineProps<{
+    // 是否显示关闭按钮
+    bentoCells: BentoCellsType[]
+    // 格子的大小
+    size?: number
+    // 每一行最大格子数量
+    maximumCells?: number
+    // 格子的间距
+    gap?: number
+    // 是否禁用拖拽
+    disabled?: boolean
+    // 格子类名
+    commonClass?: string
+  }>(),
+  {
+    maximumCells: 4,
+    size: 100,
+    gap: 10,
+    disabled: false,
+    commonClass: 'bento-item',
   },
-  maximumCells: {
-    default: 4,
-  },
-  size: {
-    default: 100,
-  },
-  gap: {
-    default: 10,
-  },
-  disabled: {
-    default: false,
-  },
-  commonClass: {
-    default: 'bento-item',
-  },
-})
+)
 
 const emit = defineEmits(['dragStart', 'dragEnd'])
-const bentoContainerWidth = computed(() => `${props.maximumCells * props.size + (props.maximumCells - 1) * props.gap}px`)
+const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
 const bentoContainerHeight = ref('500px')
 const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
-const bentoCells = ref(props.bentoCells)
+const bentoCells = ref<BentoCellsType[]>(props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
 const proxyBox = ref<BentoCellsType>({
@@ -49,21 +51,25 @@ const proxyBox = ref<BentoCellsType>({
 })
 
 // 0. 初始化设置格子的位置
-isNeedDefaultLayout(bentoCells, props)
+if (bentoCells.value?.length) {
+  isNeedDefaultLayout(bentoCells, props)
+}
 
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
-  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size, props, emit)
+  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit)
 })
 
 // 2. 监听 bentoCells 的变化，重新计算 bentoContainerHeight
 watch(bentoCells, (n) => {
-  const h = n.reduce((prev, current) => {
-    return (prev?.y + prev?.height > current?.y + current?.height) ? prev : current
-  })
-  if (!h)
-    return
-  bentoContainerHeight.value = `${(h.y + h.height) * props.size + (h.y + h.height - 1) * props.gap}px`
+  if (n?.length) {
+    const h = n.reduce((prev, current) => {
+      return (prev?.y + prev?.height > current?.y + current?.height) ? prev : current
+    })
+    if (!h)
+      return
+    bentoContainerHeight.value = `${(h.y + h.height) * props.size! + (h.y + h.height - 1) * props.gap!}px`
+  }
 }, { deep: true, immediate: true })
 </script>
 
@@ -71,6 +77,7 @@ watch(bentoCells, (n) => {
   <div
     ref="bentoContainerRef"
     :class="bentoContainerClassName"
+    v-if="bentoCells?.length"
   >
     <component
       :is="item.component"
@@ -106,6 +113,9 @@ watch(bentoCells, (n) => {
         height: `${proxyBox.height === 2 ? proxyBox.height * props.size + props.gap : proxyBox.height * props.size}px`,
       }"
     />
+  </div>
+  <div v-else>
+    <slot name="empty" />
   </div>
 </template>
 

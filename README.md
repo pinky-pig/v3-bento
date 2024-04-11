@@ -13,7 +13,7 @@
 </p>
 
 使用 v3-bento 开发的示例。   
-NPM 演示地址： <https://www.npmjs.com/package/v3-bento> 
+NPM 演示地址： <https://www.npmjs.com/package/v3-bento>   
 Github 代码地址： <https://github.com/pinky-pig/what-is-v3-bento>
 
 ## 🎉 Introduce
