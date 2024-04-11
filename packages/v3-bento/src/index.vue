@@ -27,6 +27,9 @@ const props = defineProps({
   disabled: {
     default: false,
   },
+  commonClass: {
+    default: 'bento-item',
+  },
 })
 
 const emit = defineEmits(['dragStart', 'dragEnd'])

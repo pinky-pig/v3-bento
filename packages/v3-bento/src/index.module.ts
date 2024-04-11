@@ -203,7 +203,13 @@ export function initGridContainer(
   function getCellObjectInStoreFromPosition(position: { x: number; y: number }): Object | null {
     let result: any = null
     const point = { x: position.x, y: position.y }
-    const initElement = document.elementFromPoint(point.x, point.y)
+    let initElement = document.elementFromPoint(point.x, point.y)
+
+    // 逐级向上查找父元素，直到找到包含指定类名的元素或到达根元素
+    while (initElement && !initElement.classList.contains(propsOption.commonClass))
+      initElement = initElement.parentElement
+
+    // 要是找得到就继续下面的逻辑了
     if (initElement)
       result = bentoCells.value.filter((ele: { id: string }) => ele.id === initElement.id)
 
