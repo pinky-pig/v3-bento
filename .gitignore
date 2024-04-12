@@ -11,9 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
-cache
 
 # Editor directories and files
+.vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -22,4 +22,3 @@ cache
 *.njsproj
 *.sln
 *.sw?
-pnpm-lock.yaml

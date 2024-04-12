@@ -10,7 +10,6 @@ export interface BentoCellsType {
   [key: string]: any
 }
 
-const isDragging = ref(false)
 let mouseFrom = { x: 0, y: 0 }
 let mouseTo = { x: 0, y: 0 }
 let area: string[][] = []
@@ -22,6 +21,7 @@ export function initGridContainer(
   size: number,
   propsOption: any,
   emit: any,
+  isDragging: Ref<boolean>,
 ) {
   // 1. 监听拖拽事件返回
   watch(isDragging, (v, o) => {

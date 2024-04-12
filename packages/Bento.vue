@@ -3,9 +3,9 @@
 // 2.每列有四个格子，间距为 10
 // 3.组件能占分别是 1,2 两种
 // 4.这里先假设每个单元格的尺寸为 100*100
-import type { Ref } from 'vue'
-import { computed, onMounted, ref, watch } from 'vue'
-
+import type { Ref, HTMLAttributes} from 'vue'
+import { computed, onMounted, ref, watch,provide } from 'vue'
+import { useSlots } from "vue";
 import { generateUuid } from './uuid'
 import { initGridContainer, isNeedDefaultLayout } from './index'
 import type { BentoCellsType } from './index'
@@ -24,6 +24,8 @@ const props = withDefaults(
     disabled?: boolean
     // 格子类名
     commonClass?: string
+    
+    class?: HTMLAttributes['class']
   }>(),
   {
     maximumCells: 4,
@@ -35,6 +37,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits(['dragStart', 'dragEnd'])
+const isDragging = ref(false)
 const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
 const bentoContainerHeight = ref('500px')
 const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
@@ -57,7 +60,7 @@ if (bentoCells.value?.length) {
 
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
-  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit)
+  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit, isDragging)
 })
 
 // 2. 监听 bentoCells 的变化，重新计算 bentoContainerHeight
@@ -71,37 +74,60 @@ watch(bentoCells, (n) => {
     bentoContainerHeight.value = `${(h.y + h.height) * props.size! + (h.y + h.height - 1) * props.gap!}px`
   }
 }, { deep: true, immediate: true })
+
+// 3. 另加的提供给 BentoItem ，如果只是动态 component 的话，都不需要这个。
+provide('size', props.size)
+provide('gap', props.gap)
+provide('isDragging', isDragging)
+provide('currentClickedElement', currentClickedElement)
+
+// 4. 判断是 BentoItem 还是 动态 component
+const slotDefault = !!useSlots().default
+const showBentoFromDataOrSlot = computed(() => {
+  const hasComponentInData = bentoCells.value.every((item) => item.component)
+  if (hasComponentInData) 
+    return 'data'
+  if (slotDefault) 
+    return 'slot'
+})
 </script>
 
 <template>
   <div
     ref="bentoContainerRef"
-    :class="bentoContainerClassName"
+    :class="bentoContainerClassName + '' + props.class"
     v-if="bentoCells?.length"
   >
-    <component
-      :is="item.component"
-      v-for="item, index in bentoCells"
-      :id="`${item.id}`"
-      :key="item.id"
-      v-model="bentoCells[index]"
-      style="border-radius: 9px;"
-      :class="item !== currentClickedElement ? 'bento-item ' : 'z-9'"
-      :style="{
-        position: 'absolute',
-        transform: `
-          translate3d(
-            ${item.x * (props.size + props.gap)}px,
-            ${item.y * (props.size + props.gap)}px,
-          0)`,
-        width: `${item.width === 2 ? item.width * props.size + props.gap : item.width * props.size}px`,
-        height: `${item.height === 2 ? item.height * props.size + props.gap : item.height * props.size}px`,
-      }"
-    />
+    <div v-if="showBentoFromDataOrSlot === 'data'">
+      <component
+        :is="item.component"
+        v-for="item, index in bentoCells"
+        :id="`${item.id}`"
+        :key="item.id"
+        v-model="bentoCells[index]"
+        :class="item !== currentClickedElement ? 'bento-item' : 'z-9'"
+        :style="{
+          position: 'absolute',
+          transform: `
+            translate3d(
+              ${item.x * (props.size + props.gap)}px,
+              ${item.y * (props.size + props.gap)}px,
+            0)`,
+          width: `${item.width === 2 ? item.width * props.size + props.gap : item.width * props.size}px`,
+          height: `${item.height === 2 ? item.height * props.size + props.gap : item.height * props.size}px`,
+        }"
+      />
+    </div>
+
+    <div v-if="showBentoFromDataOrSlot === 'slot'">
+      <slot />
+    </div>
+    
     <div
       v-show="currentClickedElement"
       class="bento-item-placeholder"
       :style="{
+        willChange: 'transform',
         position: 'absolute',
         transform: `
           translate3d(
@@ -112,7 +138,9 @@ watch(bentoCells, (n) => {
         width: `${proxyBox.width === 2 ? proxyBox.width * props.size + props.gap : proxyBox.width * props.size}px`,
         height: `${proxyBox.height === 2 ? proxyBox.height * props.size + props.gap : proxyBox.height * props.size}px`,
       }"
-    />
+    >
+      <slot name="bento-item-placeholder" />
+    </div>
   </div>
   <div v-else>
     <slot name="empty" />
@@ -141,8 +169,5 @@ watch(bentoCells, (n) => {
   transition: all 500ms ease 0s;
   box-shadow: 0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-}
-.bento-item-placeholder{
-  background-color: #e3e3e3e0;
 }
 </style>
