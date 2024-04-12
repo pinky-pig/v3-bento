@@ -64,6 +64,9 @@ export function initGridContainer(
   }
 
   function mousedown(e: MouseEvent) {
+    // 阻止浏览器默认行为
+    e.preventDefault();
+    
     mouseFrom = { x: e.clientX, y: e.clientY }
     currentClickedElement.value = getCellObjectInStoreFromPosition(mouseFrom)
     if (currentClickedElement.value) {
@@ -92,6 +95,8 @@ export function initGridContainer(
     const disY = (mouseTo.y - mouseFrom.y) / size
     const rect = containerRef.value?.getBoundingClientRect()
     if (!rect)
+      return
+    if (!currentClickedElement.value)
       return
 
     if (isDragging.value) {
