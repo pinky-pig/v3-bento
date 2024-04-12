@@ -3,10 +3,9 @@
 // 2.每列有四个格子，间距为 10
 // 3.组件能占分别是 1,2 两种
 // 4.这里先假设每个单元格的尺寸为 100*100
-import type { Ref, HTMLAttributes} from 'vue'
+import type { Ref} from 'vue'
 import { computed, onMounted, ref, watch,provide } from 'vue'
 import { useSlots } from "vue";
-import { generateUuid } from './uuid'
 import { initGridContainer, isNeedDefaultLayout } from './index'
 import type { BentoCellsType } from './index'
 
@@ -24,8 +23,6 @@ const props = withDefaults(
     disabled?: boolean
     // 格子类名
     commonClass?: string
-    
-    class?: HTMLAttributes['class']
   }>(),
   {
     maximumCells: 4,
@@ -39,8 +36,8 @@ const props = withDefaults(
 const emit = defineEmits(['dragStart', 'dragEnd'])
 const isDragging = ref(false)
 const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
+
 const bentoContainerHeight = ref('500px')
-const bentoContainerClassName = ref(`bento-container-${generateUuid()}`)
 const bentoCells = ref<BentoCellsType[]>(props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
@@ -95,8 +92,19 @@ const showBentoFromDataOrSlot = computed(() => {
 <template>
   <div
     ref="bentoContainerRef"
-    :class="bentoContainerClassName + '' + props.class"
     v-if="bentoCells?.length"
+    :style="{
+      /* touch-action 是为了解决 pointer 事件三次之后不生效的问题。其实这个监听改成 mouse 和 touch 就行了，后面优化 */
+      /* https://segmentfault.com/a/1190000040746305 */
+      touchAction: 'auto',
+      height: bentoContainerHeight,
+      width: bentoContainerWidth,
+      transition: 'all 500ms ease 0s',
+      position: 'relative',
+      willChange: 'transform',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    }"
   >
     <div v-if="showBentoFromDataOrSlot === 'data'">
       <component
@@ -151,23 +159,12 @@ const showBentoFromDataOrSlot = computed(() => {
 .z-9{
   z-index: 9;
 }
-.bento-container{
-  /* touch-action 是为了解决 pointer 事件三次之后不生效的问题。其实这个监听改成 mouse 和 touch 就行了，后面优化 */
-  /* https://segmentfault.com/a/1190000040746305 */
-  touch-action: auto;
-  height: v-bind(bentoContainerHeight);
-  width: v-bind(bentoContainerWidth);
-  transition: all 500ms ease 0s;
-  position: relative;
-  will-change: transform;
-}
 .bento-item:hover{
   cursor: grab;
 }
 .bento-item ,
 .bento-item-placeholder{
   transition: all 500ms ease 0s;
-  box-shadow: 0px 0px 16px -1px rgba(0, 0, 0, 0.05), 0px 0px 16px -8px rgba(0, 0, 0, 0.05), 0px 0px 16px -12px rgba(0, 0, 0, 0.12), 0px 0px 2px 0px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 </style>
