@@ -25,11 +25,9 @@ watch(currentClickedElement,(newVal, oldVal) => {
     }, 500);
   }
 },{ deep: true, })
-
 </script>
 
 <template>
-    <!-- :class="bentoItemClassName +' '+ bentoItemZIndex +' '+ props.class" -->
   <div
     :id="`${props.id}`"
     :class="(props.id !== currentClickedElement?.id ? 'bento-item' : '') + ' '+ bentoItemZIndex +' '+ props.class"

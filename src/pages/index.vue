@@ -1,7 +1,4 @@
 <script setup lang="ts" generic="T extends any, O extends any">
-import { Card, CardContent,} from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger, } from '@/components/ui/tabs'
-
 defineOptions({
   name: 'IndexPage',
 })
@@ -10,9 +7,7 @@ defineOptions({
 <template>
   <div class="w-full h-full flex flex-col items-center justify-center text-center px-4 pt-10">
 
-
     <div class="py-8" />
-
 
     <BentoIcon class="w-12 h-12 inline-block mb-4"></BentoIcon>
 
@@ -21,7 +16,7 @@ defineOptions({
     </h1>
 
     <p>
-      <em class="text-sm opacity-75">Arvin's Simple Vite Starter Template</em>
+      <em class="text-sm opacity-75">A simple bento layout component for Vue3.</em>
     </p>
 
     <div class="flex flex-row justify-center items-center gap-2 mt-5">
@@ -40,15 +35,19 @@ defineOptions({
 
     <div class="py-8" />
 
-    <div class="container">
+    <div 
+      class="w-full max-w-[642px] mx-auto text-start"
+      style="
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+      "
+    >
 
-      <Default />
+      <!-- <DemoDefault /> -->
+      <!-- <DemoByMarkRaw /> -->
+      <Installation></Installation>
 
-      <h2>Installation</h2>
-      pnpm i v3-bento
-      <h2>Installation</h2>
-      pnpm i v3-bento
-
+      <BentoItemUsage></BentoItemUsage>
 
     </div>
 
@@ -58,18 +57,3 @@ defineOptions({
     <TheFooter></TheFooter>
   </div>
 </template>
-<style scoped>
-.container {
-  --side-padding: 16px;
-  max-width: 642px;
-  margin: 0 auto;
-  padding-left: max(var(--side-padding), env(safe-area-inset-left));
-  padding-right: max(var(--side-padding), env(safe-area-inset-right));
-  text-align: start;
-}
-h2{
-  font-size: 16px;
-  font-weight: 500;
-  margin: 12px 0;
-}
-</style>

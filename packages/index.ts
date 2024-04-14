@@ -7,6 +7,7 @@ export interface BentoCellsType {
   y: number
   width: number
   height: number
+  index: number
   [key: string]: any
 }
 
@@ -74,19 +75,13 @@ export function initGridContainer(
       // place-holder
       proxyBox.value = Object.assign({ }, currentClickedElement.value)
       // 将当前拖拽的元素放到最上面
-      const index = bentoCells.value.findIndex((ele: { id: any }) => ele.id === currentClickedElement.value.id)
-      if (index !== -1) {
-        const ele = bentoCells.value.splice(index, 1)
-        bentoCells.value.push(ele[0])
-      }
+      // const index = bentoCells.value.findIndex((ele: { id: any }) => ele.id === currentClickedElement.value.id)
+      // if (index !== -1) {
+      //   const ele = bentoCells.value.splice(index, 1)
+      //   bentoCells.value.push(ele[0])
+      // }
 
-      // 将其排个序
-      bentoCells.value = bentoCells.value.sort((a, b) => {
-        if (a.y !== b.y)
-          return a.y - b.y // 按照 y 值升序排序
-        else
-          return a.x - b.x // 在同一行内，按照 x 值升序排序
-      })
+      // setBentoCellsIndex(bentoCells)
     }
   }
   function mousemove(e: MouseEvent) {
@@ -201,6 +196,8 @@ export function initGridContainer(
     }
     mouseFrom.x = 0
     mouseFrom.y = 0
+
+    setBentoCellsIndex(bentoCells)
     // 拖拽完成后，数组按照布局顺序排列
     isDragging.value = false
   }
@@ -223,6 +220,25 @@ export function initGridContainer(
 }
 
 // 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
+export function setBentoCellsIndex(bentoCells: Ref<BentoCellsType[]>) {
+  const temp = bentoCells.value.map((item) => item)
+  temp.sort((a, b) => {
+    if (a.y !== b.y)
+      return a.y - b.y // 按照 y 值升序排序
+    else
+      return a.x - b.x // 在同一行内，按照 x 值升序排序
+  })
+
+  const tempMap = new Map(temp.map((item, index) => [item.id, index]));
+  bentoCells.value.forEach(item => {
+    const tempIndex = tempMap.get(item.id);
+    if (tempIndex !== undefined) {
+      item.index = tempIndex;
+    }
+  })
+}
+
+// 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
 export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOption: any) {
   const overlap = checkOverlap(bentoCells.value)
   const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
@@ -238,18 +254,25 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
   const chessboard: number[][] = new Array(totalHeight).fill(0).map(() => new Array(maximumCells).fill(0))
 
   /**
-   * 1. 先按顺序排列
-   * 2. 再一个一个排序
+   * 1. 已知每个元素的 index 值
+   * 2. 按照 index 的值从开始排列
    */
-
-  bentoCells.value = bentoCells.value.sort((a, b) => {
+  setBentoCellsIndex(bentoCells)
+ 
+  // 首先创建一个中间变量 temp
+  // 然后记住 id 和原来的 index
+  // 然后将 temp 按照 index 值从开始排列
+  // 然后再遍历 temp ，如果需要获取原来的对象的话，先通过 id 取出 index ，再获取
+  const temp = bentoCells.value.map((item) => item)
+  const tempMap = new Map(temp.map((item, index) => [item.id, index]));
+  temp.sort((a, b) => {
     if (a.y !== b.y)
       return a.y - b.y // 按照 y 值升序排序
     else
       return a.x - b.x // 在同一行内，按照 x 值升序排序
   })
 
-  for (let index = 0; index < bentoCells.value.length; index++) {
+  for (let index = 0; index < temp.length; index++) {
     let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
 
     for (let row = 0; row < chessboard.length; row++) {
@@ -258,26 +281,34 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
 
       for (let col = 0; col < chessboard[row].length; col++) {
         // 2x2
-        if (bentoCells.value[index].width === 2 && bentoCells.value[index].height === 2) {
+        if (temp[index].width === 2 && temp[index].height === 2) {
           if (chessboard[row][col] === 0
             && chessboard[row][col + 1] === 0
             && chessboard[row + 1][col] === 0
             && chessboard[row + 1][col + 1] === 0) {
-            bentoCells.value[index].x = col
-            bentoCells.value[index].y = row
-            chessboard[row][col] = 1
-            chessboard[row][col + 1] = 1
-            chessboard[row + 1][col] = 1
-            chessboard[row + 1][col + 1] = 1
-            foundCell = true
-            break
+              // 设置 item 的实际位置
+              const realIndex = tempMap.get(temp[index].id)
+              if (realIndex) {
+                bentoCells.value[realIndex].x = col
+                bentoCells.value[realIndex].y = row
+              }
+              // 设置棋盘
+              chessboard[row][col] = 1
+              chessboard[row][col + 1] = 1
+              chessboard[row + 1][col] = 1
+              chessboard[row + 1][col + 1] = 1
+              foundCell = true
+              break
           }
         }
         // 2x1
-        if (bentoCells.value[index].width === 2 && bentoCells.value[index].height === 1) {
+        if (temp[index].width === 2 && temp[index].height === 1) {
           if (chessboard[row][col] === 0 && chessboard[row][col + 1] === 0) {
-            bentoCells.value[index].x = col
-            bentoCells.value[index].y = row
+            const realIndex = tempMap.get(temp[index].id)
+            if (realIndex) {
+              bentoCells.value[realIndex].x = col
+              bentoCells.value[realIndex].y = row
+            }
             chessboard[row][col] = 1
             chessboard[row][col + 1] = 1
             foundCell = true
@@ -285,10 +316,13 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
           }
         }
         // 1x2
-        if (bentoCells.value[index].width === 1 && bentoCells.value[index].height === 2) {
+        if (temp[index].width === 1 && temp[index].height === 2) {
           if (chessboard[row][col] === 0 && chessboard[row + 1][col] === 0) {
-            bentoCells.value[index].x = col
-            bentoCells.value[index].y = row
+            const realIndex = tempMap.get(temp[index].id)
+            if (realIndex) {
+              bentoCells.value[realIndex].x = col
+              bentoCells.value[realIndex].y = row
+            }
             chessboard[row][col] = 1
             chessboard[row + 1][col] = 1
             foundCell = true
@@ -296,10 +330,13 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
           }
         }
         // 1x1
-        if (bentoCells.value[index].width === 1 && bentoCells.value[index].height === 1) {
+        if (temp[index].width === 1 && temp[index].height === 1) {
           if (chessboard[row][col] === 0) {
-            bentoCells.value[index].x = col
-            bentoCells.value[index].y = row
+            const realIndex = tempMap.get(temp[index].id)
+            if (realIndex) {
+              bentoCells.value[realIndex].x = col
+              bentoCells.value[realIndex].y = row
+            }
             chessboard[row][col] = 1
             foundCell = true
             break

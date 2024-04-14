@@ -38,6 +38,7 @@ const isDragging = ref(false)
 const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
 
 const bentoContainerHeight = ref('500px')
+
 const bentoCells = ref<BentoCellsType[]>(props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
