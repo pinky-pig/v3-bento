@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { HTMLAttributes, inject, Ref, watch, ref } from 'vue';
+import { inject,  watch, ref } from 'vue';
+import type {  Ref } from 'vue';
 
 const size = inject('size') as Ref<number>
 const gap = inject('gap') as Ref<number>

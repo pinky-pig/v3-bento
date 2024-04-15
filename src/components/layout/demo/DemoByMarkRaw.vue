@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bento } from '../../../../packages/component'
+import { Bento } from '../../../../packages'
 
 import One from '@/components/image-card/Cell1.vue'
 import Two from '@/components/image-card/Cell2.vue'

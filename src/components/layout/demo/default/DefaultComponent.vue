@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bento, BentoItem } from '../../../../../packages/component'
+import { Bento, BentoItem } from '../../../../../packages'
 import Cell from '@/components/image-card/Cell.vue'
 
 const bentoCells = [

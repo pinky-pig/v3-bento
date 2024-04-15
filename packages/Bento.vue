@@ -6,8 +6,8 @@
 import type { Ref} from 'vue'
 import { computed, onMounted, ref, watch,provide } from 'vue'
 import { useSlots } from "vue";
-import { initGridContainer, isNeedDefaultLayout } from './index'
-import type { BentoCellsType } from './index'
+import { initGridContainer, isNeedDefaultLayout } from './core'
+import type { BentoCellsType } from './core'
 
 const props = withDefaults(
   defineProps<{
