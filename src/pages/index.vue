@@ -21,12 +21,13 @@ defineOptions({
 
     <div class="flex flex-row justify-center items-center gap-2 mt-5">
 
-      <a rel="noreferrer" href="https://github.com/pinky-pig/vue-starter-lite" target="_blank">
-        <Button class="h-[38px] w-[148px] text-[13px]">
-          Get started
-        </Button>
-      </a>
-      <a rel="noreferrer" href="https://github.com/pinky-pig/vue-starter-lite" target="_blank">
+      <Button @click="toggleDark" class="h-[38px] w-[148px] font-medium gap-2">
+        <div class="i-carbon-sun dark:i-carbon-moon text-lg" />
+        <span v-show="!isDark">Light</span>
+        <span v-show="isDark">Dark</span>
+      </Button>
+
+      <a rel="noreferrer" href="https://github.com/pinky-pig/v3-bento" target="_blank">
         <Button variant="outline" class="h-[38px] w-[148px] text-[13px]">
           GitHub 
         </Button>

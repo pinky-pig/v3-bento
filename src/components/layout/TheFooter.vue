@@ -7,7 +7,15 @@
     <a
       class="i-carbon-logo-github text-2xl"
       rel="noreferrer"
-      href="https://github.com/pinky-pig/vue-starter-lite"
+      href="https://github.com/pinky-pig/v3-bento"
+      target="_blank"
+      title="GitHub"
+    />
+
+    <a
+      class="i-carbon-user-filled text-2xl"
+      rel="noreferrer"
+      href="https://mmeme.me/"
       target="_blank"
       title="GitHub"
     />

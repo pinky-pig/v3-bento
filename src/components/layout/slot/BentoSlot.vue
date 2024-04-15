@@ -33,7 +33,7 @@ const list = [
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="item in list" :key="item.props">
+      <TableRow v-for="item in list" :key="item.name">
         <TableCell class="font-medium">
           {{ item.name }}
         </TableCell>

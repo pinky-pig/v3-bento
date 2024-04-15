@@ -46,7 +46,7 @@ const list = [
   <br>
 
   <h3>{{ '\
-      <BentoItem \ />'}} Properties
+      <BentoItem \ />'}}
   </h3>
 
   <Table>
