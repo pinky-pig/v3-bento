@@ -43,7 +43,7 @@ defineOptions({
       "
     >
 
-      <!-- <DemoDefault /> -->
+      <DemoDefault />
       <!-- <DemoByMarkRaw /> -->
       <Installation></Installation>
 

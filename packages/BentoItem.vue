@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HTMLAttributes, inject, Ref, watch } from 'vue';
+import { HTMLAttributes, inject, Ref, watch, ref } from 'vue';
 
 const size = inject('size') as Ref<number>
 const gap = inject('gap') as Ref<number>
@@ -30,7 +30,7 @@ watch(currentClickedElement,(newVal, oldVal) => {
 <template>
   <div
     :id="`${props.id}`"
-    :class="(props.id !== currentClickedElement?.id ? 'bento-item' : '') + ' '+ bentoItemZIndex +' '+ props.class"
+    :class="(props.id !== currentClickedElement?.id ? 'bento-item' : '') + ' '+ bentoItemZIndex +' '+ (props.class || '')"
     :style="{
       willChange: 'transform',
       overflow: 'hidden',
@@ -47,6 +47,7 @@ watch(currentClickedElement,(newVal, oldVal) => {
           0)`,
       width: `${props.width === 2 ? props.width * size + gap : props.width * size}px`,
       height: `${props.height === 2 ? props.height * size + gap : props.height * size}px`,
+      userSelect: 'none'
     }"
   >
     <slot />

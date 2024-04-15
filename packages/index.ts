@@ -52,6 +52,11 @@ export function initGridContainer(
       bindMouseEvent()
   }, { immediate: true })
 
+  // 4. 解决拖拽到图片的默认行为
+  containerRef.value.addEventListener('pointerdown', function(e: MouseEvent) {
+    e.preventDefault()
+  }, false)
+
   function bindMouseEvent() {
     window.addEventListener('pointerdown', mousedown, false)
     window.addEventListener('pointermove', mousemove, false)
@@ -65,23 +70,12 @@ export function initGridContainer(
   }
 
   function mousedown(e: MouseEvent) {
-    // 阻止浏览器默认行为
-    e.preventDefault();
-    
     mouseFrom = { x: e.clientX, y: e.clientY }
     currentClickedElement.value = getCellObjectInStoreFromPosition(mouseFrom)
     if (currentClickedElement.value) {
       isDragging.value = true
       // place-holder
       proxyBox.value = Object.assign({ }, currentClickedElement.value)
-      // 将当前拖拽的元素放到最上面
-      // const index = bentoCells.value.findIndex((ele: { id: any }) => ele.id === currentClickedElement.value.id)
-      // if (index !== -1) {
-      //   const ele = bentoCells.value.splice(index, 1)
-      //   bentoCells.value.push(ele[0])
-      // }
-
-      // setBentoCellsIndex(bentoCells)
     }
   }
   function mousemove(e: MouseEvent) {
