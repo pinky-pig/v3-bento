@@ -11,6 +11,8 @@ const handleCopyCode = async () => {
 </script>
 
 <template>
+  <br>
+  <br>
   <h2>Installation</h2>
   <div class="relative">
     <Suspense>

@@ -76,6 +76,7 @@ watch(bentoCells, (n) => {
 // 3. 另加的提供给 BentoItem ，如果只是动态 component 的话，都不需要这个。
 provide('size', props.size)
 provide('gap', props.gap)
+provide('commonClass', props.commonClass)
 provide('isDragging', isDragging)
 provide('currentClickedElement', currentClickedElement)
 

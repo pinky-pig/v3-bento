@@ -1,30 +1,92 @@
 <script setup lang="ts">
-import { toast } from 'vue-sonner'
 
-const code = `pnpm install v3-bento`
-const showCheckIcon = ref(false)
-
-const handleCopyCode = async () => {
-  await useCopyCode({ code, checkIconRef: showCheckIcon })
-  toast('Copied to your clipboard!!!')
-}
+const list = [
+  {
+    props: 'bentoCells',
+    type: 'BentoCellsType[]',
+    default: '',
+    required: 'true',
+    description: '每个格子'
+  },
+  {
+    props: 'maximumCells',
+    type: 'number',
+    default: '',
+    required: 'true',
+    description: '每一行最大格子数量'
+  },
+  {
+    props: 'size',
+    type: 'number',
+    default: '',
+    required: 'true',
+    description: '格子的大小'
+  },
+  {
+    props: 'gap',
+    type: 'number',
+    default: '10',
+    required: 'false',
+    description: '格子的间距'
+  },
+  {
+    props: 'disabled',
+    type: 'boolean',
+    default: 'false',
+    required: 'false',
+    description: '是否禁用拖拽'
+  },
+  {
+    props: 'commonClass',
+    type: 'string',
+    default: '\`bento-item\`',
+    required: 'false',
+    description: '格子的类名'
+  },
+]
 </script>
 
 <template>
-  <h2>Bento Properties</h2>
-  <div class="relative">
-    <Suspense>
-      <Code :code="code" :lang="'bash'" />
-    </Suspense>
+  <br>
+  <h3>{{ '\<Bento \/>'}} Properties</h3>
+  <Table>
+    <TableCaption />
+    <TableHeader>
+      <TableRow>
+        <TableHead class="w-[100px]">
+          Prop
+        </TableHead>
+        <TableHead>Type</TableHead>
+        <TableHead>Default</TableHead>
+        <TableHead>Require</TableHead>
+        <TableHead class="text-right">
+          Default
+        </TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      <TableRow v-for="item in list" :key="item.props">
+        <TableCell class="font-medium">
+          {{ item.props }}
+        </TableCell>
+        <TableCell>
+          {{ item.type }}
+        </TableCell>
+        <TableHead>
+          {{ item.default }}
+        </TableHead>
+        <TableHead>
+          {{ item.required }}
+        </TableHead>
 
-    <button 
-      aria-label="Copy code" 
-      title="Copy code" 
-      class="absolute btn-border w-[26px] h-[26px] rounded-[5px] p-1 top-1 right-2 flex justify-center items-center border border-solid border-[#f3f3f3] dark:border-[#1e293b]"
-      @click="handleCopyCode"
-    >
-      <div class="i-lucide-check text-[14px]" v-if="showCheckIcon"></div>
-      <div class="i-lucide-copy text-[14px]" v-else></div>
-    </button>
-  </div>
+        <TableCell class="text-right">
+          {{ item.description }}
+        </TableCell>
+      </TableRow>
+    </TableBody>
+  </Table>
 </template>
+
+<style scoped>
+
+</style>

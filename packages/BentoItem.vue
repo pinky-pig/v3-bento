@@ -3,16 +3,22 @@ import { HTMLAttributes, inject, Ref, watch, ref } from 'vue';
 
 const size = inject('size') as Ref<number>
 const gap = inject('gap') as Ref<number>
+const commonClass = inject('commonClass') as Ref<number>
 const currentClickedElement = inject('currentClickedElement') as Ref<any>
 
-const props = defineProps<{
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  class?: HTMLAttributes['class']
-}>()
+const props = withDefaults(
+  defineProps<{
+    id: string;
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+  }>(),
+  {
+    width: 1,
+    height: 1,
+  },
+)
 
 // 松开后的过渡过去的时候的层级置顶，延迟的时间是写死的，后面可以配置
 const bentoItemZIndex = ref('')
@@ -30,7 +36,7 @@ watch(currentClickedElement,(newVal, oldVal) => {
 <template>
   <div
     :id="`${props.id}`"
-    :class="(props.id !== currentClickedElement?.id ? 'bento-item' : '') + ' '+ bentoItemZIndex +' '+ (props.class || '')"
+    :class="(props.id !== currentClickedElement?.id ? commonClass : '') + ' '+ bentoItemZIndex "
     :style="{
       willChange: 'transform',
       overflow: 'hidden',

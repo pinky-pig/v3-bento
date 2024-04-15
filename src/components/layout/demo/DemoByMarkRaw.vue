@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Bento } from '../../../packages/component'
+import { Bento } from '../../../../packages/component'
 
-import One from '@/components/default-layout/Cell1.vue'
-import Two from '@/components/default-layout/Cell2.vue'
-import Three from '@/components/default-layout/Cell3.vue'
-import Four from '@/components/default-layout/Cell4.vue'
-import Five from '@/components/default-layout/Cell5.vue'
-import Six from '@/components/default-layout/Cell6.vue'
+import One from '@/components/image-card/Cell1.vue'
+import Two from '@/components/image-card/Cell2.vue'
+import Three from '@/components/image-card/Cell3.vue'
+import Four from '@/components/image-card/Cell4.vue'
+import Five from '@/components/image-card/Cell5.vue'
+import Six from '@/components/image-card/Cell6.vue'
 
 const bentoCells = [
   { id: '1', x: 0, y: 0, width: 2, height: 2, component: markRaw(One)},

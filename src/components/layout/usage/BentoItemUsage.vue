@@ -1,7 +1,30 @@
 <script setup lang="ts">
 import { toast } from 'vue-sonner'
 
-const code = `pnpm install v3-bento`
+const code = `<!-- Usage.vue -->
+<Bento
+  :bentoCells="bentoCells"
+  class="!h-[610px] overflow-y-auto overflow-x-hidden p-[10px] box-content"
+  :size="140"
+  :disabled="false"
+  :gap="10"
+  :maximum-cells="4"
+  @drag-end="(e: any) => console.log(e)"
+  @drag-start="(e: any) => console.log(e)"
+>
+  <BentoItem 
+    v-for="item in bentoCells" 
+    :key="item.id" 
+    :id="item.id" 
+    :x="item.x" 
+    :y="item.y" 
+    :width="item.width" 
+    :height="item.height"
+  >
+    <Cell :url="'./' + item.id + '.svg'" :bg="'#fff'" />
+  </BentoItem>
+</Bento>
+`
 const showCheckIcon = ref(false)
 
 const handleCopyCode = async () => {
@@ -11,7 +34,10 @@ const handleCopyCode = async () => {
 </script>
 
 <template>
-  <h2>Usage by BentoItem</h2>
+  <br>
+  <br>
+  <h2>Usage</h2>
+  <h3>Wrap the child component to be dragged with the Bento and BentoItem components.</h3>
   <div class="relative">
     <Suspense>
       <Code :code="code" :lang="'bash'" />

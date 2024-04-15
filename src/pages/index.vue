@@ -36,18 +36,24 @@ defineOptions({
     <div class="py-8" />
 
     <div 
-      class="w-full max-w-[642px] mx-auto text-start"
+      class="w-full max-w-[652px] mx-auto text-start"
       style="
         padding-left: max(16px, env(safe-area-inset-left));
         padding-right: max(16px, env(safe-area-inset-right));
       "
     >
 
-      <DemoDefault />
-      <!-- <DemoByMarkRaw /> -->
       <Installation></Installation>
 
       <BentoItemUsage></BentoItemUsage>
+
+      <DemoDefault />
+
+      <Properties />
+      
+      <Events />
+      
+      <BentoSlot />
 
     </div>
 

@@ -2,29 +2,31 @@
 
 const list = [
   {
-    props: 'dragStart',
-    return: 'cell',
-    description: '拖拽开始，返回选中拖拽的那个格子对象'
+    name: 'bento-item-placeholder',
+    required: 'false',
+    description: '拖拽的时候的占位要素'
   },
   {
-    props: 'dragEnd',
-    return: 'bentoCells',
-    description: '拖拽结束，返回排序后的 bentoCells 数组'
+    name: 'empty',
+    required: 'false',
+    description: '数组对象要是为空显示的 DOM'
   },
 ]
 </script>
 
 <template>
   <br>
-  <h3>{{ '\<Bento \/>'}} Events</h3>
+  <br>
+  <h2>Slot</h2>
+  <h3>{{ '\<Bento \/>'}} </h3>
   <Table>
     <TableCaption />
     <TableHeader>
       <TableRow>
-        <TableHead class="w-[100px]">
-          Prop
+        <TableHead>
+          Name
         </TableHead>
-        <TableHead>Return</TableHead>
+        <TableHead>Required</TableHead>
         <TableHead class="text-right">
           Description
         </TableHead>
@@ -33,10 +35,10 @@ const list = [
     <TableBody>
       <TableRow v-for="item in list" :key="item.props">
         <TableCell class="font-medium">
-          {{ item.props }}
+          {{ item.name }}
         </TableCell>
         <TableHead>
-          {{ item.return }}
+          {{ item.required }}
         </TableHead>
 
         <TableCell class="text-right">
