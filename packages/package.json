@@ -3,15 +3,17 @@
   "type": "module",
   "version": "0.0.2-alpha.6.1",
   "private": false,
-  "author": "pinky-pig",
+  "author": "arvin",
   "license": "MIT",
-  "homepage": "https://github.com/pinky-pig/what-is-v3-bento",
+  "homepage": "http://v3bento.mmeme.me/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pinky-pig/what-is-v3-bento"
+    "url": "https://github.com/pinky-pig/v3-bento"
   },
   "keywords": [
+    "v3-bento",
     "vue3-bento",
+    "vue-grid-layout",
     "vue3-drag-bento-component",
     "drag",
     "bento",
@@ -19,13 +21,13 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/v3-bento.es.js",
-      "require": "./dist/v3-bento.umd.js"
+      "import": "./v3-bento.js",
+      "require": "./v3-bento.cjs"
     }
   },
-  "main": "./dist/v3-bento.umd.js",
-  "module": "./dist/v3-bento.es.js",
-  "types": "./dist/index.d.ts",
+  "main": "./v3-bento.js",
+  "module": "./v3-bento.js",
+  "types": "./playground.d.ts",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
@@ -34,9 +36,7 @@
     "dist/*"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vite"
   },
   "devDependencies": {
     "typescript": "^4.9.3",
