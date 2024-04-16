@@ -4,7 +4,8 @@
   "private": false,
   "scripts": {
     "dev": "vite --port 3333 --open",
-    "lint": "eslint .",
+    "lint": "eslint . && npm run lint:fix",
+    "lint:fix": "eslint --fix",
     "build": "vue-tsc && vite build",
     "build:bento": "vite build --mode lib && npm run build:types",
     "build:types": "vue-tsc -p tsconfig.build.json",

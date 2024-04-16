@@ -7,23 +7,10 @@ import type { Ref } from 'vue'
 import { computed, onMounted, provide, ref, useSlots, watch } from 'vue'
 
 import { initGridContainer, isNeedDefaultLayout } from './core'
-import type { BentoCellsType } from './core'
+import type { BentoItemType, BentoProps } from './types'
 
 const props = withDefaults(
-  defineProps<{
-    // 是否显示关闭按钮
-    bentoCells: BentoCellsType[]
-    // 格子的大小
-    size?: number
-    // 每一行最大格子数量
-    maximumCells?: number
-    // 格子的间距
-    gap?: number
-    // 是否禁用拖拽
-    disabled?: boolean
-    // 格子类名
-    commonClass?: string
-  }>(),
+  defineProps<BentoProps>(),
   {
     maximumCells: 4,
     size: 100,
@@ -39,10 +26,10 @@ const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! 
 
 const bentoContainerHeight = ref('500px')
 
-const bentoCells = ref<BentoCellsType[]>(props.bentoCells)
+const bentoCells = ref<BentoItemType[]>(props.bentoCells)
 const bentoContainerRef = ref()
 const currentClickedElement: Ref<any> = ref()
-const proxyBox = ref<BentoCellsType>({
+const proxyBox = ref<BentoItemType>({
   id: 'proxy',
   index: 0,
   x: 0,

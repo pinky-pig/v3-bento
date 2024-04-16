@@ -2,7 +2,7 @@
 const list = [
   {
     props: 'bentoCells',
-    type: 'BentoCellsType[]',
+    type: 'BentoItemProps[]',
     default: '',
     required: 'true',
     description: '每个格子',

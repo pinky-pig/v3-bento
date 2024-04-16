@@ -1,24 +1,15 @@
 import type { Ref } from 'vue'
 import { watch } from 'vue'
-
-export interface BentoCellsType {
-  id: string
-  x: number
-  y: number
-  width: number
-  height: number
-  index: number
-  [key: string]: any
-}
+import type { BentoItemProps } from './types'
 
 let mouseFrom = { x: 0, y: 0 }
 let mouseTo = { x: 0, y: 0 }
 let area: string[][] = []
 export function initGridContainer(
   containerRef: Ref<HTMLElement>,
-  bentoCells: Ref<BentoCellsType[]>,
+  bentoCells: Ref<BentoItemProps[]>,
   currentClickedElement: Ref<any>,
-  proxyBox: Ref<BentoCellsType>,
+  proxyBox: Ref<BentoItemProps>,
   size: number,
   propsOption: any,
   emit: any,
@@ -106,7 +97,7 @@ export function initGridContainer(
 
       /////////////////////////////////////////////////////////////////////////////////////
       // 1.除了当前拖拽的元素之外的所有元素
-      const allCellsWithProxyByCurrent: BentoCellsType[] = []
+      const allCellsWithProxyByCurrent: BentoItemProps[] = []
       bentoCells.value.forEach((item) => {
         if (item.id !== currentClickedElement.value.id)
           allCellsWithProxyByCurrent.push(item)
@@ -132,19 +123,19 @@ export function initGridContainer(
     // todo: 需要限制递归深度，避免无限递归导致的性能问题
     // 这里会有个元素重叠的情况。一般情况下，不会出现，因为碰撞走了
     // 但是如果碰撞没有走，那么就会出现重叠的情况，这样这里的递归会一直走，这里需要处理
-    function hitAllEle(node: BentoCellsType, allNodes: BentoCellsType[]) {
+    function hitAllEle(node: BentoItemProps, allNodes: BentoItemProps[]) {
       // area = getArea(allCellsWithProxyByCurrent)
       const hittedNodes: any = []
 
       // 1.找到当前元素第一层碰撞的元素
-      allNodes.forEach((n: BentoCellsType, _index: number) => {
+      allNodes.forEach((n: BentoItemProps, _index: number) => {
         if (node.id !== n.id && checkHit(node, n)) {
           // 将当前碰撞的要素添加到数组中
           hittedNodes.push(n)
         }
       })
       // 2.碰撞到了之后，一格一格移动
-      hittedNodes.forEach((n: BentoCellsType) => {
+      hittedNodes.forEach((n: BentoItemProps) => {
         for (let h = n.y + 1; h <= node.y + node.height; h++) {
           n.y = h
           // 每次移动一格之后，就来检测一下，是否还有元素被碰撞
@@ -152,18 +143,18 @@ export function initGridContainer(
         }
       })
     }
-    function getAllCellsByArea(area: string[][], allCells: BentoCellsType[]) {
-      const result: BentoCellsType[] = []
+    function getAllCellsByArea(area: string[][], allCells: BentoItemProps[]) {
+      const result: BentoItemProps[] = []
       // 数组去重
       Array.from(new Set(area.flat())).forEach((cell: string) => {
         allCells.forEach((n) => {
-          if (n.id === cell && result.findIndex((ele: BentoCellsType) => ele.id === n.id) === -1)
+          if (n.id === cell && result.findIndex((ele: BentoItemProps) => ele.id === n.id) === -1)
             result.push(n)
         })
       })
       return result
     }
-    function arrangeByLine(lineCount: number, allCellsWithProxyByCurrent: BentoCellsType[]) {
+    function arrangeByLine(lineCount: number, allCellsWithProxyByCurrent: BentoItemProps[]) {
       for (let row = 0; row < lineCount; row++) {
         if (area[row] && area[row].length > 0) {
           area[row].forEach((cell: string) => {
@@ -214,7 +205,7 @@ export function initGridContainer(
 }
 
 // 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
-export function setBentoCellsIndex(bentoCells: Ref<BentoCellsType[]>) {
+export function setBentoCellsIndex(bentoCells: Ref<BentoItemProps[]>) {
   const temp = bentoCells.value.map(item => item)
   temp.sort((a, b) => {
     if (a.y !== b.y)
@@ -232,7 +223,7 @@ export function setBentoCellsIndex(bentoCells: Ref<BentoCellsType[]>) {
 }
 
 // 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
-export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOption: any) {
+export function isNeedDefaultLayout(bentoCells: Ref<BentoItemProps[]>, propsOption: any) {
   const overlap = checkOverlap(bentoCells.value)
   const exceedingMaxCells = checkExceedingMaxCells(bentoCells.value, propsOption.maximumCells)
 
@@ -242,7 +233,7 @@ export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOpti
   }
 }
 // 默认布局
-function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
+function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: number) {
   const totalHeight = bentoCells.value.reduce((sum, item) => sum + item.y + item.height, 0)
   const chessboard: number[][] = Array.from({ length: totalHeight }).fill(0).map(() => Array.from({ length: maximumCells }).fill(0)) as number[][]
 
@@ -340,7 +331,7 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
   }
 }
 // 判断传递过来的要素是否有重叠。true表示有重叠，false表示没有重叠
-function checkOverlap(elements: BentoCellsType[]): boolean {
+function checkOverlap(elements: BentoItemProps[]): boolean {
   for (let i = 0; i < elements.length; i++) {
     const ele1 = elements[i]
     for (let j = i + 1; j < elements.length; j++) {
@@ -354,7 +345,7 @@ function checkOverlap(elements: BentoCellsType[]): boolean {
   return false
 }
 // 将 node 在 area 冒泡向上
-function bubbleUp(node: BentoCellsType, area: string[][]) {
+function bubbleUp(node: BentoItemProps, area: string[][]) {
   for (let row = node.y - 1; row >= 0; row--) {
     // 如果一整行都为空，则直接继续往上找
     if (area[row] === undefined)
@@ -388,7 +379,7 @@ function bubbleUp(node: BentoCellsType, area: string[][]) {
 // 该函数通过遍历输入的节点数组，将节点的id按照其位置信息记录在返回的二维数组中。
 // 具体实现方式为，先遍历每个节点，再通过两层循环分别遍历节点所占据的行和列，
 // 最后将该位置上的元素设为当前节点的id。
-function getArea(nodes: BentoCellsType[]) {
+function getArea(nodes: BentoItemProps[]) {
   const area: any = []
   nodes.forEach((n) => {
     for (let row = n.y; row < n.y + n.height; row++) {
@@ -407,7 +398,7 @@ function getArea(nodes: BentoCellsType[]) {
 // 元素 a 的右侧坐标大于元素 b 的左侧坐标。
 // 元素 a 的上方坐标小于元素 b 的下方坐标。
 // 元素 a 的下方坐标大于元素 b 的上方坐标
-function checkHit(a: BentoCellsType, b: BentoCellsType) {
+function checkHit(a: BentoItemProps, b: BentoItemProps) {
   return (
     a.x < b.x + b.width
     && a.x + a.width > b.x
@@ -416,8 +407,8 @@ function checkHit(a: BentoCellsType, b: BentoCellsType) {
   )
 }
 // 是否有超过边界的值
-function checkExceedingMaxCells(bentoCells: BentoCellsType[], maximumCells: number) {
-  const exceedingElements: { element: BentoCellsType, type: 'maxX' | 'minX' | 'minY' }[] = []
+function checkExceedingMaxCells(bentoCells: BentoItemProps[], maximumCells: number) {
+  const exceedingElements: { element: BentoItemProps, type: 'maxX' | 'minX' | 'minY' }[] = []
   bentoCells.forEach((element) => {
     const maxX = element.x + element.width
     const minX = element.x
