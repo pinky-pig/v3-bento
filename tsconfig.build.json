@@ -4,7 +4,7 @@
     "baseUrl": "./",
     "moduleResolution": "Node",
     "declaration": true,
-    "declarationDir": "./output-lib",
+    "declarationDir": "./temp",
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "output-lib"
