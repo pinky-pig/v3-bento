@@ -74,6 +74,11 @@ export default defineConfig(({ mode }) => {
       libInjectCss(),
     ]
   }
+  else {
+    userConfig.build = {
+      outDir: 'dist',
+    }
+  }
 
   return {
     resolve: {

@@ -1,4 +1,4 @@
-import type { Raw } from 'vue'
+import type { Component, Raw } from 'vue'
 
 /**
  * JS 操作的数组类型
