@@ -1,28 +1,35 @@
 import path from 'node:path'
 import fs from 'node:fs'
 
-// 定义源文件和目标文件的路径
-const sourcePath = path.resolve(__dirname, '../packages/package.json') // 修改为实际的源文件路径
-const destinationPath = path.resolve(__dirname, '../output-lib/package.json') // 修改为实际的目标文件路径
+const sourcePath1 = path.resolve(__dirname, '../packages/package.json') // 修改为实际的第一个源文件路径
+const destinationPath1 = path.resolve(__dirname, '../output-lib/package.json') // 修改为实际的第一个目标文件路径
 
-// 检查源文件是否存在
-if (!fs.existsSync(sourcePath)) {
-  console.error(`Source file ${sourcePath} does not exist.`)
-  process.exit(1)
-}
+const sourcePath2 = path.resolve(__dirname, '../README.md') // 修改为实际的第二个源文件路径
+const destinationPath2 = path.resolve(__dirname, '../output-lib/README.md') // 修改为实际的第二个目标文件路径
 
-// 读取源文件内容
-fs.readFile(sourcePath, 'utf8', (err, data) => {
-  if (err) {
-    console.error(`Error reading source file: ${err}`)
+function copy(sourcePath: string, targetPath: string) {
+  if (!fs.existsSync(sourcePath)) {
+    console.error(`Source file ${sourcePath} does not exist.`)
     process.exit(1)
   }
 
-  // 写入目标文件
-  fs.writeFile(destinationPath, data, 'utf8', (err) => {
+  // 读取源文件内容
+  fs.readFile(sourcePath, 'utf8', (err, data) => {
     if (err) {
-      console.error(`Error writing destination file: ${err}`)
+      console.error(`Error reading source file: ${err}`)
       process.exit(1)
     }
+
+    // 写入目标文件
+    fs.writeFile(targetPath, data, 'utf8', (err) => {
+      if (err) {
+        console.error(`Error writing destination file: ${err}`)
+        process.exit(1)
+      }
+    })
   })
-})
+}
+
+copy(sourcePath1, destinationPath1)
+
+copy(sourcePath2, destinationPath2)
