@@ -60,9 +60,9 @@ watch(bentoCells, (n) => {
 }, { deep: true, immediate: true })
 
 // 3. 另加的提供给 BentoItem ，如果只是动态 component 的话，都不需要这个。
-provide('size', props.size)
-provide('gap', props.gap)
-provide('commonClass', props.commonClass)
+provide('size', computed(() => props.size))
+provide('gap', computed(() => props.gap))
+provide('commonClass', computed(() => props.commonClass))
 provide('isDragging', isDragging)
 provide('currentClickedElement', currentClickedElement)
 
@@ -111,8 +111,8 @@ const showBentoFromDataOrSlot = computed(() => {
               ${item.x * (props.size + props.gap)}px,
               ${item.y * (props.size + props.gap)}px,
             0)`,
-          width: `${item.width === 2 ? item.width * props.size + props.gap : item.width * props.size}px`,
-          height: `${item.height === 2 ? item.height * props.size + props.gap : item.height * props.size}px`,
+          width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
+          height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
         }"
       />
     </div>
@@ -133,8 +133,8 @@ const showBentoFromDataOrSlot = computed(() => {
             ${proxyBox.y * (props.size + props.gap)}px,
           0)`,
 
-        width: `${proxyBox.width === 2 ? proxyBox.width * props.size + props.gap : proxyBox.width * props.size}px`,
-        height: `${proxyBox.height === 2 ? proxyBox.height * props.size + props.gap : proxyBox.height * props.size}px`,
+        width: `${proxyBox.width * props.size + props.gap * (proxyBox.width - 1)}px`,
+        height: `${proxyBox.height * props.size + props.gap * (proxyBox.height - 1)}px`,
       }"
     >
       <slot name="bento-item-placeholder" />

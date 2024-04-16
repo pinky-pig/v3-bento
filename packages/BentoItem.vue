@@ -52,8 +52,8 @@ watch(currentClickedElement, (_newVal, _oldVal) => {
             ${props.x * (size + gap)}px,
             ${props.y * (size + gap)}px,
           0)`,
-      width: `${props.width === 2 ? props.width * size + gap : props.width * size}px`,
-      height: `${props.height === 2 ? props.height * size + gap : props.height * size}px`,
+      width: `${props.width * size + gap * (props.width - 1)}px`,
+      height: `${props.height * size + gap * (props.height - 1)}px`,
       userSelect: 'none',
     }"
   >

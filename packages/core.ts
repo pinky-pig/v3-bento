@@ -233,7 +233,8 @@ export function isNeedDefaultLayout(bentoCells: Ref<BentoItemProps[]>, propsOpti
   }
 }
 // 默认布局
-function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: number) {
+// 默认布局
+export function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: number) {
   const totalHeight = bentoCells.value.reduce((sum, item) => sum + item.y + item.height, 0)
   const chessboard: number[][] = Array.from({ length: totalHeight }).fill(0).map(() => Array.from({ length: maximumCells }).fill(0)) as number[][]
 
@@ -255,7 +256,6 @@ function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: number) {
     else
       return a.x - b.x // 在同一行内，按照 x 值升序排序
   })
-
   for (let index = 0; index < temp.length; index++) {
     let foundCell = false // 因为 break 只能跳出单个循环，所以用这个变量来跳出双层循环
 
@@ -264,67 +264,35 @@ function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: number) {
         break
 
       for (let col = 0; col < chessboard[row].length; col++) {
-        // 2x2
-        if (temp[index].width === 2 && temp[index].height === 2) {
-          if (chessboard[row][col] === 0
-            && chessboard[row][col + 1] === 0
-            && chessboard[row + 1][col] === 0
-            && chessboard[row + 1][col + 1] === 0) {
-            // 设置 item 的实际位置
-            const realIndex = tempMap.get(temp[index].id)
-            if (realIndex) {
-              bentoCells.value[realIndex].x = col
-              bentoCells.value[realIndex].y = row
+        const width = temp[index].width
+        const height = temp[index].height
+
+        // 检查当前形状的格子是否可用
+        let available = true
+        for (let r = row; r < row + height; r++) {
+          for (let c = col; c < col + width; c++) {
+            if (chessboard[r][c] !== 0) {
+              available = false
+              break
             }
-            // 设置棋盘
-            chessboard[row][col] = 1
-            chessboard[row][col + 1] = 1
-            chessboard[row + 1][col] = 1
-            chessboard[row + 1][col + 1] = 1
-            foundCell = true
-            break
           }
+          if (!available)
+            break
         }
-        // 2x1
-        if (temp[index].width === 2 && temp[index].height === 1) {
-          if (chessboard[row][col] === 0 && chessboard[row][col + 1] === 0) {
-            const realIndex = tempMap.get(temp[index].id)
-            if (realIndex) {
-              bentoCells.value[realIndex].x = col
-              bentoCells.value[realIndex].y = row
-            }
-            chessboard[row][col] = 1
-            chessboard[row][col + 1] = 1
-            foundCell = true
-            break
+
+        // 如果当前形状的格子可用，则设置位置并更新棋盘
+        if (available) {
+          const realIndex = tempMap.get(temp[index].id)
+          if (realIndex) {
+            bentoCells.value[realIndex].x = col
+            bentoCells.value[realIndex].y = row
           }
-        }
-        // 1x2
-        if (temp[index].width === 1 && temp[index].height === 2) {
-          if (chessboard[row][col] === 0 && chessboard[row + 1][col] === 0) {
-            const realIndex = tempMap.get(temp[index].id)
-            if (realIndex) {
-              bentoCells.value[realIndex].x = col
-              bentoCells.value[realIndex].y = row
-            }
-            chessboard[row][col] = 1
-            chessboard[row + 1][col] = 1
-            foundCell = true
-            break
+          for (let r = row; r < row + height; r++) {
+            for (let c = col; c < col + width; c++)
+              chessboard[r][c] = 1
           }
-        }
-        // 1x1
-        if (temp[index].width === 1 && temp[index].height === 1) {
-          if (chessboard[row][col] === 0) {
-            const realIndex = tempMap.get(temp[index].id)
-            if (realIndex) {
-              bentoCells.value[realIndex].x = col
-              bentoCells.value[realIndex].y = row
-            }
-            chessboard[row][col] = 1
-            foundCell = true
-            break
-          }
+          foundCell = true
+          break
         }
       }
     }

@@ -4,22 +4,37 @@ import Cell from '@/components/image-card/Cell.vue'
 
 const bentoCells = [
   { id: '1', x: 0, y: 0, width: 2, height: 2, index: 0 },
-  { id: '2', x: 2, y: 0, width: 2, height: 1, index: 1 },
-  { id: '3', x: 2, y: 1, width: 1, height: 1, index: 2 },
-  { id: '4', x: 3, y: 1, width: 1, height: 2, index: 3 },
-  { id: '5', x: 0, y: 2, width: 2, height: 1, index: 4 },
-  { id: '6', x: 0, y: 2, width: 1, height: 1, index: 5 },
+  { id: '2', x: 0, y: 0, width: 2, height: 1, index: 1 },
+  { id: '3', x: 0, y: 0, width: 1, height: 1, index: 2 },
+  { id: '4', x: 0, y: 0, width: 1, height: 2, index: 3 },
+  { id: '5', x: 0, y: 0, width: 2, height: 1, index: 4 },
+  { id: '6', x: 0, y: 0, width: 1, height: 1, index: 5 },
 ]
+
+const isMobileRef = ref(/iPhone|iPod|Android|Mobile/i.test(navigator.userAgent))
+const disabled = ref(isMobileRef.value)
+const size = ref(140)
+const gap = ref(10)
+const maximumCells = ref(4)
+
+if (document.body.clientWidth <= 768) {
+  // 如果是宽度比较小
+  maximumCells.value = 2
+  size.value = (document.body.clientWidth - 50) / 2 - 28
+}
+else {
+  maximumCells.value = 4
+}
 </script>
 
 <template>
   <Bento
     :bento-cells="bentoCells"
     class="!max-h-[610px] overflow-y-auto overflow-x-hidden p-[10px] box-content"
-    :size="140"
-    :disabled="false"
-    :gap="10"
-    :maximum-cells="4"
+    :size="size"
+    :disabled="disabled"
+    :gap="gap"
+    :maximum-cells="maximumCells"
     @drag-end="(e: any) => console.log(e)"
     @drag-start="(e: any) => console.log(e)"
   >
