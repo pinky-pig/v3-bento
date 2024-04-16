@@ -33,7 +33,7 @@
     "access": "public"
   },
   "files": [
-    "dist/*"
+    "*"
   ],
   "scripts": {
     "dev": "vite"
