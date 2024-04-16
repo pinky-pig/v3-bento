@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { getHighlighter } from 'shiki'
 
-// 所有的主题：import { bundledThemes } from 'shiki' 
-// 支持的语言：import { bundledLanguages } from 'shiki' 
+// 所有的主题：import { bundledThemes } from 'shiki'
+// 支持的语言：import { bundledLanguages } from 'shiki'
 
 const props = withDefaults(defineProps<{
-  code: string,
+  code: string
   // 代码语言类型
-  lang?: string,
+  lang?: string
   // 浅色主题
-  theme?: string,
+  theme?: string
   // 深色主题
-  darkTheme?: string,
+  darkTheme?: string
 }>(), {
   lang: 'javascript',
   theme: 'github-light',
@@ -54,7 +54,7 @@ const highlighter = await getHighlighter({
 
 const code = highlighter.codeToHtml(props.code, {
   lang: props.lang,
-  themes: { 
+  themes: {
     light: 'vitesse-light',
     dark: 'nord',
   },
@@ -63,5 +63,5 @@ const code = highlighter.codeToHtml(props.code, {
 </script>
 
 <template>
-  <div v-html="code"></div>
+  <div v-html="code" />
 </template>

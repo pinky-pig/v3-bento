@@ -6,10 +6,9 @@ defineOptions({
 
 <template>
   <div class="w-full h-full flex flex-col items-center justify-center text-center px-4 pt-10">
-
     <div class="py-8" />
 
-    <BentoIcon class="w-12 h-12 inline-block mb-4"></BentoIcon>
+    <BentoIcon class="w-12 h-12 inline-block mb-4" />
 
     <h1 class="text-4xl font-bold mb-2">
       V3 Bento
@@ -20,8 +19,7 @@ defineOptions({
     </p>
 
     <div class="flex flex-row justify-center items-center gap-2 mt-5">
-
-      <Button @click="toggleDark" class="h-[38px] w-[148px] font-medium gap-2">
+      <Button class="h-[38px] w-[148px] font-medium gap-2" @click="toggleDark">
         <div class="i-carbon-sun dark:i-carbon-moon text-lg" />
         <span v-show="!isDark">Light</span>
         <span v-show="isDark">Dark</span>
@@ -29,38 +27,33 @@ defineOptions({
 
       <a rel="noreferrer" href="https://github.com/pinky-pig/v3-bento" target="_blank">
         <Button variant="outline" class="h-[38px] w-[148px] text-[13px]">
-          GitHub 
+          GitHub
         </Button>
       </a>
     </div>
 
     <div class="py-8" />
 
-    <div 
+    <div
       class="w-full max-w-[652px] mx-auto text-start"
       style="
         padding-left: max(16px, env(safe-area-inset-left));
         padding-right: max(16px, env(safe-area-inset-right));
       "
     >
+      <Installation />
 
-      <Installation></Installation>
-
-      <BentoItemUsage></BentoItemUsage>
+      <BentoItemUsage />
 
       <DemoDefault />
 
       <Properties />
-      
-      <Events />
-      
-      <BentoSlot />
 
+      <Events />
+
+      <BentoSlot />
     </div>
 
-
-
-
-    <TheFooter></TheFooter>
+    <TheFooter />
   </div>
 </template>

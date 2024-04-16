@@ -3,9 +3,9 @@
 // 2.每列有四个格子，间距为 10
 // 3.组件能占分别是 1,2 两种
 // 4.这里先假设每个单元格的尺寸为 100*100
-import type { Ref} from 'vue'
-import { computed, onMounted, ref, watch,provide } from 'vue'
-import { useSlots } from "vue";
+import type { Ref } from 'vue'
+import { computed, onMounted, provide, ref, useSlots, watch } from 'vue'
+
 import { initGridContainer, isNeedDefaultLayout } from './core'
 import type { BentoCellsType } from './core'
 
@@ -52,9 +52,8 @@ const proxyBox = ref<BentoCellsType>({
 })
 
 // 0. 初始化设置格子的位置
-if (bentoCells.value?.length) {
+if (bentoCells.value?.length)
   isNeedDefaultLayout(bentoCells, props)
-}
 
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
@@ -83,18 +82,20 @@ provide('currentClickedElement', currentClickedElement)
 // 4. 判断是 BentoItem 还是 动态 component
 const slotDefault = !!useSlots().default
 const showBentoFromDataOrSlot = computed(() => {
-  const hasComponentInData = bentoCells.value.every((item) => item.component)
-  if (hasComponentInData) 
+  const hasComponentInData = bentoCells.value.every(item => item.component)
+  if (hasComponentInData)
     return 'data'
-  if (slotDefault) 
+  if (slotDefault)
     return 'slot'
+
+  return 'slot'
 })
 </script>
 
 <template>
   <div
-    ref="bentoContainerRef"
     v-if="bentoCells?.length"
+    ref="bentoContainerRef"
     :style="{
       /* touch-action 是为了解决 pointer 事件三次之后不生效的问题。其实这个监听改成 mouse 和 touch 就行了，后面优化 */
       /* https://segmentfault.com/a/1190000040746305 */
@@ -132,7 +133,7 @@ const showBentoFromDataOrSlot = computed(() => {
     <div v-if="showBentoFromDataOrSlot === 'slot'">
       <slot />
     </div>
-    
+
     <div
       v-show="currentClickedElement"
       class="bento-item-placeholder"
@@ -158,14 +159,14 @@ const showBentoFromDataOrSlot = computed(() => {
 </template>
 
 <style scoped>
-.z-9{
+.z-9 {
   z-index: 9;
 }
-.bento-item:hover{
+.bento-item:hover {
   cursor: grab;
 }
-.bento-item ,
-.bento-item-placeholder{
+.bento-item,
+.bento-item-placeholder {
   transition: all 500ms ease 0s;
   overflow: hidden;
 }

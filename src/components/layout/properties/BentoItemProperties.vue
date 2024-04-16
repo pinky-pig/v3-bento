@@ -1,52 +1,49 @@
 <script setup lang="ts">
-
-
-
 const list = [
   {
     props: 'id',
     type: 'string',
     default: '',
     required: 'true',
-    description: '格子的 ID'
+    description: '格子的 ID',
   },
   {
     props: 'x',
     type: 'number',
     default: '0',
     required: 'true',
-    description: '格子的 x 轴坐标'
+    description: '格子的 x 轴坐标',
   },
   {
     props: 'y',
     type: 'number',
     default: '0',
     required: 'true',
-    description: '格子的 y 轴坐标'
+    description: '格子的 y 轴坐标',
   },
   {
     props: 'width',
     type: 'number',
     default: '1',
     required: 'false',
-    description: '每个单元格在 X 方向上占多大的格子'
+    description: '每个单元格在 X 方向上占多大的格子',
   },
   {
     props: 'height',
     type: 'number',
     default: '1',
     required: 'false',
-    description: '每个单元格在 Y 方向上占多大的格子'
+    description: '每个单元格在 Y 方向上占多大的格子',
   },
 ]
-
 </script>
 
 <template>
   <br>
 
-  <h3>{{ '\
-      <BentoItem \ />'}}
+  <h3>
+    {{ '\
+      <BentoItem \ />' }}
   </h3>
 
   <Table>
@@ -65,7 +62,6 @@ const list = [
       </TableRow>
     </TableHeader>
     <TableBody>
-
       <TableRow v-for="item in list" :key="item.props">
         <TableCell class="font-medium">
           {{ item.props }}
@@ -84,7 +80,6 @@ const list = [
           {{ item.description }}
         </TableCell>
       </TableRow>
-
     </TableBody>
   </Table>
 </template>

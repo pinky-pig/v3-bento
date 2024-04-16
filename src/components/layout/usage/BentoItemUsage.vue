@@ -27,7 +27,7 @@ const code = `<!-- Usage.vue -->
 `
 const showCheckIcon = ref(false)
 
-const handleCopyCode = async () => {
+async function handleCopyCode() {
   await useCopyCode({ code, checkIconRef: showCheckIcon })
   toast('Copied to your clipboard!!!')
 }
@@ -40,17 +40,17 @@ const handleCopyCode = async () => {
   <h3>Wrap the child component to be dragged with the Bento and BentoItem components.</h3>
   <div class="relative">
     <Suspense>
-      <Code :code="code" :lang="'bash'" />
+      <Code :code="code" lang="bash" />
     </Suspense>
 
-    <button 
-      aria-label="Copy code" 
-      title="Copy code" 
+    <button
+      aria-label="Copy code"
+      title="Copy code"
       class="absolute btn-border w-[26px] h-[26px] rounded-[5px] p-1 top-1 right-2 flex justify-center items-center border border-solid border-[#f3f3f3] dark:border-[#1e293b]"
       @click="handleCopyCode"
     >
-      <div class="i-lucide-check text-[14px]" v-if="showCheckIcon"></div>
-      <div class="i-lucide-copy text-[14px]" v-else></div>
+      <div v-if="showCheckIcon" class="i-lucide-check text-[14px]" />
+      <div v-else class="i-lucide-copy text-[14px]" />
     </button>
   </div>
 </template>

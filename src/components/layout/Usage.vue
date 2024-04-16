@@ -27,11 +27,10 @@ const bentoCells = [
 `
 const showCheckIconBentoItem = ref(false)
 
-const handleCopyCodeBentoItem = async () => {
+async function handleCopyCodeBentoItem() {
   await useCopyCode({ code: codeInBentoItem, checkIconRef: showCheckIconBentoItem })
   toast('Copied to your clipboard!!!')
 }
-
 
 // -------------------方式 2 ----------------------- //
 const codeInMarkRaw = `
@@ -59,7 +58,7 @@ const bentoCells = [
 `
 const showCheckIconMarkRaw = ref(false)
 
-const handleCopyCodeMarkRaw = async () => {
+async function handleCopyCodeMarkRaw() {
   await useCopyCode({ code: codeInMarkRaw, checkIconRef: showCheckIconMarkRaw })
   toast('Copied to your clipboard!!!')
 }
@@ -70,34 +69,34 @@ const handleCopyCodeMarkRaw = async () => {
   <h3>方式一： 通过 BentoItem 组件使用。 </h3>
   <div class="relative">
     <Suspense>
-      <Code :code="codeInMarkRaw" :lang="'vue'" />
+      <Code :code="codeInMarkRaw" lang="vue" />
     </Suspense>
 
-    <button 
-      aria-label="Copy code" 
-      title="Copy code" 
+    <button
+      aria-label="Copy code"
+      title="Copy code"
       class="absolute btn-border w-[26px] h-[26px] rounded-[5px] p-1 top-1 right-2 flex justify-center items-center border border-solid border-[#f3f3f3] dark:border-[#1e293b]"
       @click="handleCopyCodeBentoItem"
     >
-      <div class="i-lucide-check text-[14px]" v-if="showCheckIconMarkRaw"></div>
-      <div class="i-lucide-copy text-[14px]" v-else></div>
+      <div v-if="showCheckIconMarkRaw" class="i-lucide-check text-[14px]" />
+      <div v-else class="i-lucide-copy text-[14px]" />
     </button>
   </div>
 
   <h3>方式二： 通过 markRaw()使用 </h3>
   <div class="relative">
     <Suspense>
-      <Code :code="codeInMarkRaw" :lang="'vue'" />
+      <Code :code="codeInMarkRaw" lang="vue" />
     </Suspense>
 
-    <button 
-      aria-label="Copy code" 
-      title="Copy code" 
+    <button
+      aria-label="Copy code"
+      title="Copy code"
       class="absolute btn-border w-[26px] h-[26px] rounded-[5px] p-1 top-1 right-2 flex justify-center items-center border border-solid border-[#f3f3f3] dark:border-[#1e293b]"
       @click="handleCopyCodeMarkRaw"
     >
-      <div class="i-lucide-check text-[14px]" v-if="showCheckIconMarkRaw"></div>
-      <div class="i-lucide-copy text-[14px]" v-else></div>
+      <div v-if="showCheckIconMarkRaw" class="i-lucide-check text-[14px]" />
+      <div v-else class="i-lucide-copy text-[14px]" />
     </button>
   </div>
 </template>

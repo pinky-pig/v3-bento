@@ -1,15 +1,14 @@
 <script setup lang="ts">
-
 const list = [
   {
     name: 'bento-item-placeholder',
     required: 'false',
-    description: '拖拽的时候的占位要素'
+    description: '拖拽的时候的占位要素',
   },
   {
     name: 'empty',
     required: 'false',
-    description: '数组对象要是为空显示的 DOM'
+    description: '数组对象要是为空显示的 DOM',
   },
 ]
 </script>
@@ -18,7 +17,7 @@ const list = [
   <br>
   <br>
   <h2>Slot</h2>
-  <h3>{{ '\<Bento \/>'}} </h3>
+  <h3>{{ '\<Bento \/>' }} </h3>
   <Table>
     <TableCaption />
     <TableHeader>

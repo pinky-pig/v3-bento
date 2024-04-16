@@ -1,4 +1,5 @@
 declare module '*.vue' {
-  import type { DefineComponent } from "vue";
-  const component:DefineComponent<{},{},any>
+  import type { DefineComponent } from 'vue'
+
+  const component: DefineComponent<{}, {}, any>
 }

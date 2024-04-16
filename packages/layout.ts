@@ -26,7 +26,8 @@ function createBentoCellComponent(name: string, content: string) {
             user-select: none;
           `,
         },
-        content)
+        content,
+      )
     },
   })
 }

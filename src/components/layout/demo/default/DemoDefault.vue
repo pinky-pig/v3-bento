@@ -1,7 +1,7 @@
 <template>
   <br>
   <h2>Demo</h2>
-  
+
   <CodePreview>
     <template #preview>
       <DefaultComponent />
@@ -11,7 +11,4 @@
       <DefaultCode />
     </template>
   </CodePreview>
-  
 </template>
-
-

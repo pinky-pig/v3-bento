@@ -1,22 +1,21 @@
 <script setup lang="ts">
-
 const list = [
   {
     name: 'dragStart',
     return: 'cell',
-    description: '拖拽开始，返回选中拖拽的那个格子对象'
+    description: '拖拽开始，返回选中拖拽的那个格子对象',
   },
   {
     name: 'dragEnd',
     return: 'bentoCells',
-    description: '拖拽结束，返回排序后的 bentoCells 数组'
+    description: '拖拽结束，返回排序后的 bentoCells 数组',
   },
 ]
 </script>
 
 <template>
   <br>
-  <h3>{{ '\<Bento \/>'}}</h3>
+  <h3>{{ '\<Bento \/>' }}</h3>
   <Table>
     <TableCaption />
     <TableHeader>

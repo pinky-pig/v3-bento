@@ -7,38 +7,36 @@
   <!-- <a href="https://vitesse-lite.netlify.app/">Live Demo</a> -->
 </h6>
 
-
 # Vue-starter-lite
 
-Project template  
-├─ public  
-├─ src  
-│   ├─ assets  
-│   └─ components  
-├─ lib  
-│   └─ utils.ts 
-├─ pages  
-│   ├─ [...all].vue  
-│   └─ index.vue  
-├─ styles  
-│   └─ global.css  
-├─ typings  
-│   ├─ auto-imports.d.ts  
-│   ├─ components.d.ts  
-│   ├─ typed-router.d.ts  
-│   ├─ vite-env.d.ts  
-│   └─ vue-shim.d.ts  
-├─ App.vue  
-├─ main.ts  
-├─ components.json  
-├─ index.html  
-├─ package.json  
-├─ postcss.config.js  
-├─ tailwind.config.js  
-├─ tsconfig.json  
-├─ vite.config.ts  
-└─ vitest.config.ts  
-
+Project template
+├─ public
+├─ src
+│ ├─ assets
+│ └─ components
+├─ lib
+│ └─ utils.ts
+├─ pages
+│ ├─ [...all].vue
+│ └─ index.vue
+├─ styles
+│ └─ global.css
+├─ typings
+│ ├─ auto-imports.d.ts
+│ ├─ components.d.ts
+│ ├─ typed-router.d.ts
+│ ├─ vite-env.d.ts
+│ └─ vue-shim.d.ts
+├─ App.vue
+├─ main.ts
+├─ components.json
+├─ index.html
+├─ package.json
+├─ postcss.config.js
+├─ tailwind.config.js
+├─ tsconfig.json
+├─ vite.config.ts
+└─ vitest.config.ts
 
 ## Features
 

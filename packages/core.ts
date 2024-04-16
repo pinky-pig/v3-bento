@@ -25,7 +25,7 @@ export function initGridContainer(
   isDragging: Ref<boolean>,
 ) {
   // 1. 监听拖拽事件返回
-  watch(isDragging, (v, o) => {
+  watch(isDragging, (v, _o) => {
     if (v) {
       emit('dragStart', currentClickedElement.value)
       // 设置所有的class 为 .bento-item 的 cursor 为 move
@@ -40,12 +40,12 @@ export function initGridContainer(
   })
 
   // 2. 监听最大单元格数
-  watch(() => propsOption.maximumCells, (v, o) => {
+  watch(() => propsOption.maximumCells, (v, _o) => {
     sortDefault(bentoCells, v)
   })
 
   // 3. 监听是否禁用
-  watch(() => propsOption.disabled, (v, o) => {
+  watch(() => propsOption.disabled, (v, _o) => {
     if (v)
       unBindMouseEvent()
     else
@@ -53,7 +53,7 @@ export function initGridContainer(
   }, { immediate: true })
 
   // 4. 解决拖拽到图片的默认行为
-  containerRef.value.addEventListener('pointerdown', function(e: MouseEvent) {
+  containerRef.value.addEventListener('pointerdown', (e: MouseEvent) => {
     e.preventDefault()
   }, false)
 
@@ -137,7 +137,7 @@ export function initGridContainer(
       const hittedNodes: any = []
 
       // 1.找到当前元素第一层碰撞的元素
-      allNodes.forEach((n: BentoCellsType, index: number) => {
+      allNodes.forEach((n: BentoCellsType, _index: number) => {
         if (node.id !== n.id && checkHit(node, n)) {
           // 将当前碰撞的要素添加到数组中
           hittedNodes.push(n)
@@ -163,7 +163,7 @@ export function initGridContainer(
       })
       return result
     }
-    function arrangeByLine(lineCount :number, allCellsWithProxyByCurrent: BentoCellsType[]) {
+    function arrangeByLine(lineCount: number, allCellsWithProxyByCurrent: BentoCellsType[]) {
       for (let row = 0; row < lineCount; row++) {
         if (area[row] && area[row].length > 0) {
           area[row].forEach((cell: string) => {
@@ -196,7 +196,7 @@ export function initGridContainer(
     isDragging.value = false
   }
 
-  function getCellObjectInStoreFromPosition(position: { x: number; y: number }): Object | null {
+  function getCellObjectInStoreFromPosition(position: { x: number, y: number }): Object | null {
     let result: any = null
     const point = { x: position.x, y: position.y }
     let initElement = document.elementFromPoint(point.x, point.y)
@@ -215,7 +215,7 @@ export function initGridContainer(
 
 // 贪心算法，遍历每个要素，然后遍历布局，设置默认布局
 export function setBentoCellsIndex(bentoCells: Ref<BentoCellsType[]>) {
-  const temp = bentoCells.value.map((item) => item)
+  const temp = bentoCells.value.map(item => item)
   temp.sort((a, b) => {
     if (a.y !== b.y)
       return a.y - b.y // 按照 y 值升序排序
@@ -223,12 +223,11 @@ export function setBentoCellsIndex(bentoCells: Ref<BentoCellsType[]>) {
       return a.x - b.x // 在同一行内，按照 x 值升序排序
   })
 
-  const tempMap = new Map(temp.map((item, index) => [item.id, index]));
-  bentoCells.value.forEach(item => {
-    const tempIndex = tempMap.get(item.id);
-    if (tempIndex !== undefined) {
-      item.index = tempIndex;
-    }
+  const tempMap = new Map(temp.map((item, index) => [item.id, index]))
+  bentoCells.value.forEach((item) => {
+    const tempIndex = tempMap.get(item.id)
+    if (tempIndex !== undefined)
+      item.index = tempIndex
   })
 }
 
@@ -245,20 +244,20 @@ export function isNeedDefaultLayout(bentoCells: Ref<BentoCellsType[]>, propsOpti
 // 默认布局
 function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
   const totalHeight = bentoCells.value.reduce((sum, item) => sum + item.y + item.height, 0)
-  const chessboard: number[][] = new Array(totalHeight).fill(0).map(() => new Array(maximumCells).fill(0))
+  const chessboard: number[][] = Array.from({ length: totalHeight }).fill(0).map(() => Array.from({ length: maximumCells }).fill(0)) as number[][]
 
   /**
    * 1. 已知每个元素的 index 值
    * 2. 按照 index 的值从开始排列
    */
   setBentoCellsIndex(bentoCells)
- 
+
   // 首先创建一个中间变量 temp
   // 然后记住 id 和原来的 index
   // 然后将 temp 按照 index 值从开始排列
   // 然后再遍历 temp ，如果需要获取原来的对象的话，先通过 id 取出 index ，再获取
-  const temp = bentoCells.value.map((item) => item)
-  const tempMap = new Map(temp.map((item, index) => [item.id, index]));
+  const temp = bentoCells.value.map(item => item)
+  const tempMap = new Map(temp.map((item, index) => [item.id, index]))
   temp.sort((a, b) => {
     if (a.y !== b.y)
       return a.y - b.y // 按照 y 值升序排序
@@ -280,19 +279,19 @@ function sortDefault(bentoCells: Ref<BentoCellsType[]>, maximumCells: number) {
             && chessboard[row][col + 1] === 0
             && chessboard[row + 1][col] === 0
             && chessboard[row + 1][col + 1] === 0) {
-              // 设置 item 的实际位置
-              const realIndex = tempMap.get(temp[index].id)
-              if (realIndex) {
-                bentoCells.value[realIndex].x = col
-                bentoCells.value[realIndex].y = row
-              }
-              // 设置棋盘
-              chessboard[row][col] = 1
-              chessboard[row][col + 1] = 1
-              chessboard[row + 1][col] = 1
-              chessboard[row + 1][col + 1] = 1
-              foundCell = true
-              break
+            // 设置 item 的实际位置
+            const realIndex = tempMap.get(temp[index].id)
+            if (realIndex) {
+              bentoCells.value[realIndex].x = col
+              bentoCells.value[realIndex].y = row
+            }
+            // 设置棋盘
+            chessboard[row][col] = 1
+            chessboard[row][col + 1] = 1
+            chessboard[row + 1][col] = 1
+            chessboard[row + 1][col + 1] = 1
+            foundCell = true
+            break
           }
         }
         // 2x1
@@ -375,11 +374,11 @@ function bubbleUp(node: BentoCellsType, area: string[][]) {
         //  ██ || ██ ██
       }
       else
-      if (area[row][col] !== undefined) {
+        if (area[row][col] !== undefined) {
         // 这里是一行的情况
         // ██ || ██ ██
-        return row + 1
-      }
+          return row + 1
+        }
     }
   }
 
@@ -411,14 +410,14 @@ function getArea(nodes: BentoCellsType[]) {
 function checkHit(a: BentoCellsType, b: BentoCellsType) {
   return (
     a.x < b.x + b.width
-          && a.x + a.width > b.x
-          && a.y < b.y + b.height
-          && a.y + a.height > b.y
+    && a.x + a.width > b.x
+    && a.y < b.y + b.height
+    && a.y + a.height > b.y
   )
 }
 // 是否有超过边界的值
 function checkExceedingMaxCells(bentoCells: BentoCellsType[], maximumCells: number) {
-  const exceedingElements: { element: BentoCellsType; type: 'maxX' | 'minX' | 'minY' }[] = []
+  const exceedingElements: { element: BentoCellsType, type: 'maxX' | 'minX' | 'minY' }[] = []
   bentoCells.forEach((element) => {
     const maxX = element.x + element.width
     const minX = element.x

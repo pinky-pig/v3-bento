@@ -31,7 +31,7 @@
     "src/typings/**/*.d.ts",
     "vite.config.*",
     "components.d.ts",
-    "auto-imports.d.ts", 
+    "auto-imports.d.ts"
   ],
   "exclude": [
     "dist",
