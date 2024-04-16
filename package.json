@@ -9,7 +9,7 @@
     "build": "vite build",
     "build:lib": "vite build --mode lib && npm run build:types && esno scripts/copy.ts",
     "build:types": "vue-tsc -p tsconfig.build.json && api-extractor run && rimraf temp",
-    "release:lib": "cd output-lib && bumpp && npm publish",
+    "release:lib": "cd output-lib && bumpp -c \"release: v%s\" package.json packages/package.json && npm publish",
     "typecheck": "vue-tsc --noEmit",
     "preview": "vite preview",
     "preview-https": "serve dist",

@@ -1,0 +1,45 @@
+{
+  "name": "v3-bento",
+  "type": "module",
+  "version": "0.0.2-alpha.6.2",
+  "private": false,
+  "author": "arvin",
+  "license": "MIT",
+  "homepage": "http://v3bento.mmeme.me/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pinky-pig/v3-bento"
+  },
+  "keywords": [
+    "v3-bento",
+    "vue3-bento",
+    "vue-grid-layout",
+    "vue3-drag-bento-component",
+    "drag",
+    "bento",
+    "grid"
+  ],
+  "exports": {
+    ".": {
+      "import": "./v3-bento.js",
+      "require": "./v3-bento.cjs"
+    }
+  },
+  "main": "./v3-bento.js",
+  "module": "./v3-bento.js",
+  "types": "./playground.d.ts",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "vue": "^3.2.45"
+  }
+}
