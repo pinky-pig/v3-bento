@@ -8,7 +8,15 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import VueRouter from 'unplugin-vue-router/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
-import { libInjectCss } from 'vite-plugin-lib-inject-css'
+
+import CleanCSS from 'clean-css'
+
+const cleanCssInstance = new CleanCSS({})
+function minify(code: string) {
+  return cleanCssInstance.minify(code).styles
+}
+
+let cssCodeStr = ''
 
 export default defineConfig(({ mode }) => {
   const userConfig: UserConfig = {}
@@ -71,7 +79,41 @@ export default defineConfig(({ mode }) => {
     // 插件
     userConfig.plugins = [
       ...commonPlugins,
-      libInjectCss(),
+      // libInjectCss(),
+      {
+        name: 'inline-css',
+        transform(code, id) {
+          const isCSS = (path: string) => /\.css$/.test(path)
+          if (!isCSS(id))
+            return
+
+          const cssCode = minify(code)
+          cssCodeStr = cssCode
+          return {
+            code: '',
+            map: { mappings: '' },
+          }
+        },
+        renderChunk(code, { isEntry }) {
+          if (!isEntry)
+            return
+
+          return {
+            code: `\
+            function __insertCSSVueSonner(code) {
+              if (!code || typeof document == 'undefined') return
+              let head = document.head || document.getElementsByTagName('head')[0]
+              let style = document.createElement('style')
+              style.type = 'text/css'
+              head.appendChild(style)
+              ;style.styleSheet ? (style.styleSheet.cssText = code) : style.appendChild(document.createTextNode(code))
+            }\n
+            __insertCSSVueSonner(${JSON.stringify(cssCodeStr)})
+            \n ${code}`,
+            map: { mappings: '' },
+          }
+        },
+      },
     ]
   }
   else {
