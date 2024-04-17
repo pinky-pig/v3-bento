@@ -22,8 +22,8 @@ const currentClickedElement = inject('currentClickedElement') as Ref<any>
 
 // 松开后的过渡过去的时候的层级置顶，延迟的时间是写死的，后面可以配置
 const bentoItemZIndex = ref('')
-watch(currentClickedElement, (_newVal, _oldVal) => {
-  if (props.id === currentClickedElement.value?.id) {
+watch(currentClickedElement, (newVal, _oldVal) => {
+  if (newVal?.id) {
     bentoItemZIndex.value = 'z-9'
   }
   else {
@@ -63,7 +63,7 @@ watch(currentClickedElement, (_newVal, _oldVal) => {
 
 <style>
 .z-9 {
-  z-index: 9;
+  z-index: 9 !important;
 }
 
 .bento-item:hover {
@@ -72,11 +72,7 @@ watch(currentClickedElement, (_newVal, _oldVal) => {
 
 .bento-item {
   transition: all 500ms ease 0s;
-  box-shadow:
-    0px 0px 16px -1px rgba(0, 0, 0, 0.05),
-    0px 0px 16px -8px rgba(0, 0, 0, 0.05),
-    0px 0px 16px -12px rgba(0, 0, 0, 0.12),
-    0px 0px 2px 0px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  z-index: 1 !important;
 }
 </style>

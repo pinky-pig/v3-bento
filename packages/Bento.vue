@@ -77,6 +77,19 @@ const showBentoFromDataOrSlot = computed(() => {
 
   return 'slot'
 })
+
+// 松开后的过渡过去的时候的层级置顶，延迟的时间是写死的，后面可以配置
+const bentoItemZIndex = ref('')
+watch(currentClickedElement, (newVal, _oldVal) => {
+  if (newVal?.id) {
+    bentoItemZIndex.value = 'z-9'
+  }
+  else {
+    setTimeout(() => {
+      bentoItemZIndex.value = ''
+    }, 500)
+  }
+}, { deep: true })
 </script>
 
 <template>
@@ -103,7 +116,7 @@ const showBentoFromDataOrSlot = computed(() => {
         :id="`${item.id}`"
         :key="item.id"
         v-model="bentoCells[index]"
-        :class="item !== currentClickedElement ? 'bento-item' : 'z-9'"
+        :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
         :style="{
           position: 'absolute',
           transform: `
@@ -146,17 +159,6 @@ const showBentoFromDataOrSlot = computed(() => {
 </template>
 
 <style>
-.z-9 {
-  z-index: 9;
-}
-.bento-item:hover {
-  cursor: grab;
-}
-.bento-item {
-  transition: all 500ms ease 0s;
-  overflow: hidden;
-}
-
 .bento-item-placeholder {
   transition: all 500ms ease 0s;
   overflow: hidden;
