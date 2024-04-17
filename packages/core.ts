@@ -156,7 +156,7 @@ export function initGridContainer(
     }
     function arrangeByLine(lineCount: number, allCellsWithProxyByCurrent: BentoItemProps[]) {
       for (let row = 0; row < lineCount; row++) {
-        if (area[row] && area[row].length > 0) {
+        if (area[row] !== undefined && area[row].length > 0) {
           area[row].forEach((cell: string) => {
             if (cell) {
               allCellsWithProxyByCurrent.forEach((n) => {
@@ -283,7 +283,7 @@ export function sortDefault(bentoCells: Ref<BentoItemProps[]>, maximumCells: num
         // 如果当前形状的格子可用，则设置位置并更新棋盘
         if (available) {
           const realIndex = tempMap.get(temp[index].id)
-          if (realIndex) {
+          if (realIndex !== undefined) {
             bentoCells.value[realIndex].x = col
             bentoCells.value[realIndex].y = row
           }
