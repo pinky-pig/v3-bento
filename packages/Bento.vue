@@ -162,5 +162,6 @@ watch(currentClickedElement, (newVal, _oldVal) => {
 .bento-item-placeholder {
   transition: all 500ms ease 0s;
   overflow: hidden;
+  z-index: 9;
 }
 </style>
