@@ -67,8 +67,16 @@ export default defineConfig(({ mode }) => {
           'vue',
         ],
         output: [
-          { format: 'cjs', entryFileNames: `v3-bento.cjs` },
-          { format: 'es', entryFileNames: `v3-bento.js`, preserveModules: false },
+          {
+            format: 'umd',
+            name: 'v3-bento.umd.js',
+            entryFileNames: `v3-bento.umd.js`,
+          },
+          {
+            format: 'es',
+            entryFileNames: `v3-bento.es.js`,
+            preserveModules: false,
+          },
         ],
       },
     }

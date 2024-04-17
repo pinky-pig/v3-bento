@@ -21,12 +21,12 @@
   ],
   "exports": {
     ".": {
-      "import": "./v3-bento.js",
-      "require": "./v3-bento.cjs"
+      "import": "./v3-bento.es.js",
+      "require": "./v3-bento.umd.cjs"
     }
   },
-  "main": "./v3-bento.js",
-  "module": "./v3-bento.js",
+  "main": "./v3-bento.es.js",
+  "module": "./v3-bento.es.js",
   "types": "./playground.d.ts",
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
