@@ -61,7 +61,7 @@ watch(currentClickedElement, (_newVal, _oldVal) => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .z-9 {
   z-index: 9;
 }

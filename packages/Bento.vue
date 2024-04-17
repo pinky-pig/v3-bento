@@ -145,14 +145,18 @@ const showBentoFromDataOrSlot = computed(() => {
   </div>
 </template>
 
-<style scoped>
+<style>
 .z-9 {
   z-index: 9;
 }
 .bento-item:hover {
   cursor: grab;
 }
-.bento-item,
+.bento-item {
+  transition: all 500ms ease 0s;
+  overflow: hidden;
+}
+
 .bento-item-placeholder {
   transition: all 500ms ease 0s;
   overflow: hidden;

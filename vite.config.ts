@@ -87,16 +87,15 @@ export default defineConfig(({ mode }) => {
     // 插件
     userConfig.plugins = [
       ...commonPlugins,
-      // libInjectCss(),
       {
         name: 'inline-css',
         transform(code, id) {
           const isCSS = (path: string) => /\.css$/.test(path)
+
           if (!isCSS(id))
             return
-
           const cssCode = minify(code)
-          cssCodeStr = cssCode
+          cssCodeStr += cssCode
           return {
             code: '',
             map: { mappings: '' },
@@ -108,7 +107,7 @@ export default defineConfig(({ mode }) => {
 
           return {
             code: `\
-            function __insertCSSVueSonner(code) {
+            function __insertCSS(code) {
               if (!code || typeof document == 'undefined') return
               let head = document.head || document.getElementsByTagName('head')[0]
               let style = document.createElement('style')
@@ -116,7 +115,7 @@ export default defineConfig(({ mode }) => {
               head.appendChild(style)
               ;style.styleSheet ? (style.styleSheet.cssText = code) : style.appendChild(document.createTextNode(code))
             }\n
-            __insertCSSVueSonner(${JSON.stringify(cssCodeStr)})
+            __insertCSS(${JSON.stringify(cssCodeStr)})
             \n ${code}`,
             map: { mappings: '' },
           }
