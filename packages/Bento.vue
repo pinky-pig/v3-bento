@@ -17,6 +17,7 @@ const props = withDefaults(
     gap: 10,
     disabled: false,
     commonClass: 'bento-item',
+    rotateType: 'light',
   },
 )
 
@@ -24,6 +25,28 @@ const emit = defineEmits(['dragStart', 'dragEnd'])
 const isDragging = ref(false)
 const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
 
+const bentoItemRotateCfg = {
+  light: {
+    maxVelocity: 10, // 最大速度
+    maxRotation: 45, // 最大旋转角度
+    rotationFactor: 0.8, // 旋转系数，用于调整旋转幅度
+  },
+  medium: {
+    maxVelocity: 10, // 最大速度
+    maxRotation: 60, // 最大旋转角度
+    rotationFactor: 2, // 旋转系数，用于调整旋转幅度
+  },
+  heavy: {
+    maxVelocity: 5, // 最大速度
+    maxRotation: 75, // 最大旋转角度
+    rotationFactor: 0.8, // 旋转系数，用于调整旋转幅度
+  },
+  none: {
+    maxVelocity: 0,
+    maxRotation: 0,
+    rotationFactor: 0,
+  },
+}
 const bentoContainerHeight = ref('500px')
 
 const bentoCells = ref<BentoItemType[]>(props.bentoCells)
@@ -44,7 +67,7 @@ if (bentoCells.value?.length)
 
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
-  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit, isDragging)
+  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit, isDragging, bentoItemRotateCfg[props.rotateType])
 })
 
 // 2. 监听 bentoCells 的变化，重新计算 bentoContainerHeight
@@ -110,10 +133,43 @@ watch(currentClickedElement, (newVal, _oldVal) => {
     }"
   >
     <div v-if="showBentoFromDataOrSlot === 'data'">
-      <component
+      <div
+        v-for="item, index in bentoCells"
+        :id="`${`${commonClass}-${item.id}`}`"
+        :key="item.id"
+        :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
+        :style="{
+          position: 'absolute',
+          transform: `
+            translate3d(
+              ${item.x * (props.size + props.gap)}px,
+              ${item.y * (props.size + props.gap)}px,
+            0)`,
+          width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
+          height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
+        }"
+      >
+        <component
+          :is="item.component"
+          v-model="bentoCells[index]"
+          :style="{
+            willChange: 'transform',
+            transition: 'transform .2s ease-out',
+            overflow: 'none',
+            transform:
+              item.id === currentClickedElement?.id
+                ? ` rotate(${currentClickedElement?.rotate || 0}deg) `
+                : ` rotate(0)`,
+            width: `100%`,
+            height: `100%`,
+            userSelect: 'none',
+          }"
+        />
+      </div>
+      <!-- <component
         :is="item.component"
         v-for="item, index in bentoCells"
-        :id="`${item.id}`"
+        :id="`${`${commonClass}-${item.id}`}`"
         :key="item.id"
         v-model="bentoCells[index]"
         :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
@@ -127,7 +183,7 @@ watch(currentClickedElement, (newVal, _oldVal) => {
           width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
           height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
         }"
-      />
+      /> -->
     </div>
 
     <div v-if="showBentoFromDataOrSlot === 'slot'">

@@ -35,4 +35,15 @@ export interface BentoProps {
   disabled?: boolean
   // 格子类名
   commonClass?: string
+  // 格子随拖拽速度倾斜的角度级别
+  rotateType?: 'light' | 'medium' | 'heavy' | 'none'
+}
+
+/**
+ *  BentoItem 倾斜
+ */
+export interface BentoItemRotateParameter {
+  maxVelocity: number
+  maxRotation: number
+  rotationFactor: number
 }
