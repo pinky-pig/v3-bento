@@ -136,7 +136,7 @@ watch(currentClickedElement, (newVal, _oldVal) => {
       <component
         :is="item.component"
         v-for="item, index in bentoCells"
-        :id="`${item.id}`"
+        :id="`${`${commonClass}-${item.id}`}`"
         :key="item.id"
         v-model="bentoCells[index]"
         :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
