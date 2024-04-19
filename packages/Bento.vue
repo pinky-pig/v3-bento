@@ -133,7 +133,40 @@ watch(currentClickedElement, (newVal, _oldVal) => {
     }"
   >
     <div v-if="showBentoFromDataOrSlot === 'data'">
-      <component
+      <div
+        v-for="item, index in bentoCells"
+        :id="`${`${commonClass}-${item.id}`}`"
+        :key="item.id"
+        :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
+        :style="{
+          position: 'absolute',
+          transform: `
+            translate3d(
+              ${item.x * (props.size + props.gap)}px,
+              ${item.y * (props.size + props.gap)}px,
+            0)`,
+          width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
+          height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
+        }"
+      >
+        <component
+          :is="item.component"
+          v-model="bentoCells[index]"
+          :style="{
+            willChange: 'transform',
+            transition: 'transform .2s ease-out',
+            overflow: 'none',
+            transform:
+              item.id === currentClickedElement?.id
+                ? ` rotate(${currentClickedElement?.rotate || 0}deg) `
+                : ` rotate(0)`,
+            width: `100%`,
+            height: `100%`,
+            userSelect: 'none',
+          }"
+        />
+      </div>
+      <!-- <component
         :is="item.component"
         v-for="item, index in bentoCells"
         :id="`${`${commonClass}-${item.id}`}`"
@@ -150,7 +183,7 @@ watch(currentClickedElement, (newVal, _oldVal) => {
           width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
           height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
         }"
-      />
+      /> -->
     </div>
 
     <div v-if="showBentoFromDataOrSlot === 'slot'">
