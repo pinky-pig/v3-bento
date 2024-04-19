@@ -166,24 +166,6 @@ watch(currentClickedElement, (newVal, _oldVal) => {
           }"
         />
       </div>
-      <!-- <component
-        :is="item.component"
-        v-for="item, index in bentoCells"
-        :id="`${`${commonClass}-${item.id}`}`"
-        :key="item.id"
-        v-model="bentoCells[index]"
-        :class="`${item.id !== currentClickedElement?.id ? commonClass : ''} ${bentoItemZIndex}` "
-        :style="{
-          position: 'absolute',
-          transform: `
-            translate3d(
-              ${item.x * (props.size + props.gap)}px,
-              ${item.y * (props.size + props.gap)}px,
-            0)`,
-          width: `${item.width * props.size + props.gap * (item.width - 1)}px`,
-          height: `${item.height * props.size + props.gap * (item.height - 1)}px`,
-        }"
-      /> -->
     </div>
 
     <div v-if="showBentoFromDataOrSlot === 'slot'">
