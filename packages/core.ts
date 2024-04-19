@@ -1,19 +1,25 @@
 import type { Ref } from 'vue'
 import { watch } from 'vue'
-import type { BentoItemProps } from './types'
+import type { BentoItemProps, BentoItemRotateParameter, BentoItemType } from './types'
 
 let mouseFrom = { x: 0, y: 0 }
 let mouseTo = { x: 0, y: 0 }
 let area: string[][] = []
+
+/** moveStartTime 和 moveCounter 是为了移动的元素倾斜所添加的 */
+let moveStartTime = performance.now()
+let moveCounter = 0
+
 export function initGridContainer(
   containerRef: Ref<HTMLElement>,
   bentoCells: Ref<BentoItemProps[]>,
-  currentClickedElement: Ref<any>,
+  currentClickedElement: Ref<BentoItemType | null>,
   proxyBox: Ref<BentoItemProps>,
   size: number,
   propsOption: any,
   emit: any,
   isDragging: Ref<boolean>,
+  bentoItemRotateCfg: BentoItemRotateParameter,
 ) {
   // 1. 监听拖拽事件返回
   watch(isDragging, (v, _o) => {
@@ -70,14 +76,33 @@ export function initGridContainer(
     }
   }
   function mousemove(e: MouseEvent) {
-    mouseTo = { x: e.clientX, y: e.clientY }
-    const disX = (mouseTo.x - mouseFrom.x) / size
-    const disY = (mouseTo.y - mouseFrom.y) / size
     const rect = containerRef.value?.getBoundingClientRect()
     if (!rect)
       return
     if (!currentClickedElement.value)
       return
+
+    // === 倾斜 start === //
+    if (propsOption.rotate !== 'none') {
+      const { velocity } = calVelocity(mouseTo.x, e.clientX, moveStartTime)
+      const { maxVelocity, maxRotation, rotationFactor } = bentoItemRotateCfg
+      const rotate = -(velocity / maxVelocity * maxRotation * rotationFactor)
+      // 每30次更新一次角度
+      if (moveCounter >= 10) {
+        currentClickedElement.value.rotate = Number(rotate.toFixed(2))
+        moveCounter = 0 // 重置计数器
+      }
+      else {
+        moveCounter++ // 计数器加一
+      }
+      moveStartTime = performance.now()
+    }
+    // === 倾斜 end === //
+
+    mouseTo = { x: e.clientX, y: e.clientY }
+
+    const disX = (mouseTo.x - mouseFrom.x) / size
+    const disY = (mouseTo.y - mouseFrom.y) / size
 
     if (isDragging.value) {
       currentClickedElement.value.x += disX
@@ -99,7 +124,7 @@ export function initGridContainer(
       // 1.除了当前拖拽的元素之外的所有元素
       const allCellsWithProxyByCurrent: BentoItemProps[] = []
       bentoCells.value.forEach((item) => {
-        if (item.id !== currentClickedElement.value.id)
+        if (item.id !== currentClickedElement.value?.id)
           allCellsWithProxyByCurrent.push(item)
       })
 
@@ -187,7 +212,7 @@ export function initGridContainer(
     isDragging.value = false
   }
 
-  function getCellObjectInStoreFromPosition(position: { x: number, y: number }): Object | null {
+  function getCellObjectInStoreFromPosition(position: { x: number, y: number }): BentoItemType | null {
     let result: any = null
     const point = { x: position.x, y: position.y }
     let initElement = document.elementFromPoint(point.x, point.y)
@@ -198,7 +223,7 @@ export function initGridContainer(
 
     // 要是找得到就继续下面的逻辑了
     if (initElement !== null && initElement.id)
-      result = bentoCells.value.filter((ele: { id: string }) => ele.id === initElement?.id)
+      result = bentoCells.value.filter((ele: { id: string }) => (`${propsOption.commonClass}-${ele.id}`) === initElement?.id)
 
     return result ? result[0] : null
   }
@@ -406,4 +431,13 @@ function checkExceedingMaxCells(bentoCells: BentoItemProps[], maximumCells: numb
     }
   })
   return exceedingElements
+}
+function calVelocity(lastX: number, currentX: number, lastTime: number, currentTime = performance.now()) {
+  const distanceX = currentX - lastX
+  const deltaTime = currentTime - lastTime
+  return {
+    velocity: distanceX / deltaTime,
+    newTime: currentTime,
+    newX: currentX,
+  }
 }

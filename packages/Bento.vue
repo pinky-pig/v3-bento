@@ -17,6 +17,7 @@ const props = withDefaults(
     gap: 10,
     disabled: false,
     commonClass: 'bento-item',
+    rotateType: 'light',
   },
 )
 
@@ -24,6 +25,28 @@ const emit = defineEmits(['dragStart', 'dragEnd'])
 const isDragging = ref(false)
 const bentoContainerWidth = computed(() => `${props.maximumCells! * props.size! + (props.maximumCells! - 1) * props.gap!}px`)
 
+const bentoItemRotateCfg = {
+  light: {
+    maxVelocity: 10, // 最大速度
+    maxRotation: 45, // 最大旋转角度
+    rotationFactor: 0.8, // 旋转系数，用于调整旋转幅度
+  },
+  medium: {
+    maxVelocity: 10, // 最大速度
+    maxRotation: 60, // 最大旋转角度
+    rotationFactor: 2, // 旋转系数，用于调整旋转幅度
+  },
+  heavy: {
+    maxVelocity: 5, // 最大速度
+    maxRotation: 75, // 最大旋转角度
+    rotationFactor: 0.8, // 旋转系数，用于调整旋转幅度
+  },
+  none: {
+    maxVelocity: 0,
+    maxRotation: 0,
+    rotationFactor: 0,
+  },
+}
 const bentoContainerHeight = ref('500px')
 
 const bentoCells = ref<BentoItemType[]>(props.bentoCells)
@@ -44,7 +67,7 @@ if (bentoCells.value?.length)
 
 // 1. 初始化盒子，给盒子添加鼠标点击事件
 onMounted(() => {
-  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit, isDragging)
+  initGridContainer(bentoContainerRef, bentoCells, currentClickedElement, proxyBox, props.size!, props, emit, isDragging, bentoItemRotateCfg[props.rotateType])
 })
 
 // 2. 监听 bentoCells 的变化，重新计算 bentoContainerHeight
