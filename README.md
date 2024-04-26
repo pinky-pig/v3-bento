@@ -40,3 +40,23 @@ pnpm install v3-bento
   </BentoItem>
 </Bento>
 ```
+
+## Source Code
+
+1. Run code: npm run dev
+2. Package lib: npm run build:lib
+3. Release lib: npm run release:lib
+4. Package documents: npm run build
+5. Preview documents: npm run preview
+
+<details>
+
+<summary>中文</summary>
+
+1. 运行代码： npm run dev
+2. 打包 lib ： npm run build:lib
+3. 发包 lib ： npm run release:lib
+4. 打包文档： npm run build
+5. 预览文档： npm run preview
+
+</details>
