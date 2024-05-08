@@ -4,11 +4,15 @@
 
   <CodePreview>
     <template #preview>
-      <DefaultComponent />
+      <Suspense>
+        <DefaultComponent />
+      </Suspense>
     </template>
 
     <template #code>
-      <DefaultCode />
+      <Suspense>
+        <DefaultCode />
+      </Suspense>
     </template>
   </CodePreview>
 </template>

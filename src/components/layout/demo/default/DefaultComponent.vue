@@ -17,14 +17,16 @@ const size = ref(140)
 const gap = ref(10)
 const maximumCells = ref(4)
 
-if (document.body.clientWidth <= 768) {
-  // 如果是宽度比较小
-  maximumCells.value = 2
-  size.value = (document.body.clientWidth - 50) / 2 - 28
-}
-else {
-  maximumCells.value = 4
-}
+onMounted(() => {
+  if (document?.body?.clientWidth <= 768) {
+    // 如果是宽度比较小
+    maximumCells.value = 2
+    size.value = (document.body.clientWidth - 50) / 2 - 28
+  }
+  else {
+    maximumCells.value = 4
+  }
+})
 </script>
 
 <template>
